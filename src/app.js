@@ -3,6 +3,8 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+const { sequelize } = require('./models');
+
 const app = express();
 
 app.use(cors());
@@ -19,5 +21,19 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'dist', 'index.html'));
   });
 }
+
+const initializeDatabase = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Database connection established successfully.');
+    
+    await sequelize.sync({ alter: true });
+    console.log('Database models synchronized.');
+  } catch (error) {
+    console.error('Database initialization error:', error);
+  }
+};
+
+initializeDatabase();
 
 module.exports = app; 
