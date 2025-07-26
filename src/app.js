@@ -4,11 +4,16 @@ const path = require('path');
 require('dotenv').config();
 
 const { sequelize } = require('./models');
+const { generalLimiter } = require('./middleware/rateLimit');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(generalLimiter);
+}
 
 const routes = require('./routes');
 
