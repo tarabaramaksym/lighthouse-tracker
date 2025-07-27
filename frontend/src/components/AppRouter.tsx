@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Home } from '@/pages/Home';
+import { Test } from '@/pages/Test';
 import { Auth } from '@/pages/Auth';
 import { Dashboard } from '@/pages/Dashboard';
 
@@ -51,6 +52,7 @@ export function AppRouter() {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/" element={<Home />} />
+				<Route path="/test" element={<Test />} />
 				<Route
 					path="/auth"
 					element={

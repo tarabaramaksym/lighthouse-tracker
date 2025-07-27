@@ -18,4 +18,17 @@
 	--color-success-bg: #efe;
 	--color-success-text: #363;
 	--color-success-border: #cfc;
+
+	/* Theme */
+	--color-page-text: var(--color-black);
+	--color-page-background: var(--color-white);
+
+	/* Dark theme colors */
+	--color-dark-bg: #0a0a0a;
+	--color-dark-surface: #1a1a1a;
+	--color-dark-surface-2: #2a2a2a;
+	--color-dark-text: #ffffff;
+	--color-dark-text-secondary: #b0b0b0;
+	--color-dark-border: #333333;
+	--color-dark-hover: #3a3a3a;
 }

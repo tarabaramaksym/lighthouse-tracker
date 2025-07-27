@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import '@/styles/common.css';
+import dayPng from '@/assets/day.png';
+import nightPng from '@/assets/night.png';
 import './Home.css';
+import { LighthouseEffect } from '@/components/LighthouseEffect';
 
 export function Home() {
 	const navigate = useNavigate();
@@ -31,19 +33,22 @@ export function Home() {
 
 			<main className="home-main">
 				<section className="hero-section">
-					<h2>Track Your Website Performance</h2>
-					<p>
-						Monitor your website's performance, accessibility, SEO, and best practices
-						with automated Lighthouse audits. Get detailed insights and track improvements over time.
-					</p>
-					<div className="hero-actions">
-						<button onClick={handleSignUp} className="btn btn-primary">
-							Get Started Free
-						</button>
-						<button onClick={handleSignIn} className="btn btn-secondary">
-							Sign In
-						</button>
+					<div>
+						<h2>Track Your Website Performance</h2>
+						<p>
+							Monitor your website's performance, accessibility, SEO, and best practices
+							with automated Lighthouse audits. Get detailed insights and track improvements over time.
+						</p>
+						<div className="hero-actions">
+							<button onClick={handleSignUp} className="btn btn-primary">
+								Get Started Free
+							</button>
+							<button onClick={handleSignIn} className="btn btn-secondary">
+								Sign In
+							</button>
+						</div>
 					</div>
+					<LighthouseEffect dayImageUrl={dayPng} nightImageUrl={nightPng} />
 				</section>
 
 				<section className="features-section">
@@ -68,10 +73,6 @@ export function Home() {
 					</div>
 				</section>
 			</main>
-
-			<footer className="home-footer">
-				<p>&copy; 2024 Lighthouse Tracker. All rights reserved.</p>
-			</footer>
 		</div>
 	);
 }

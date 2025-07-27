@@ -1,5 +1,4 @@
 import { useAuth } from '@/hooks/useAuth';
-import '@/styles/common.css';
 import './Dashboard.css';
 
 export function Dashboard() {
