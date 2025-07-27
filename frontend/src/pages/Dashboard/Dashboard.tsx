@@ -1,10 +1,12 @@
 import { useAuth } from '@/hooks/useAuth';
-import { useState } from 'preact/compat';
+import { useState, useEffect } from 'preact/compat';
+import { useSearchParams } from 'react-router-dom';
 import { DomainDropdown } from '@/components/DomainDropdown';
 import { AddDomainButton } from '@/components/AddDomainButton';
 import { DomainForm } from '@/components/DomainForm';
 import { UrlList } from '@/components/UrlList';
 import { UrlForm } from '@/components/UrlForm';
+import { PerformanceCalendar } from '@/components/PerformanceCalendar';
 import { FormContainer } from '@/components/FormContainer';
 import './Dashboard.css';
 
@@ -12,11 +14,38 @@ type FormState = 'none' | 'domain' | 'url';
 
 export function Dashboard() {
 	const { user } = useAuth();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const [selectedDomainId, setSelectedDomainId] = useState<number | null>(null);
+	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 	const [formState, setFormState] = useState<FormState>('none');
+
+	const domainIdFromUrl = searchParams.get('domain');
+	const dateFromUrl = searchParams.get('date');
+
+	useEffect(() => {
+		if (domainIdFromUrl) {
+			const domainId = parseInt(domainIdFromUrl);
+			if (!isNaN(domainId)) {
+				setSelectedDomainId(domainId);
+			}
+		}
+		if (dateFromUrl) {
+			setSelectedDate(dateFromUrl);
+		}
+	}, [domainIdFromUrl, dateFromUrl]);
 
 	const handleDomainChange = (domainId: number) => {
 		setSelectedDomainId(domainId);
+		setSearchParams({ domain: domainId.toString() });
+	};
+
+	const handleDateSelect = (date: string) => {
+		setSelectedDate(date);
+		const params: Record<string, string> = { domain: selectedDomainId!.toString() };
+		if (date) {
+			params.date = date;
+		}
+		setSearchParams(params);
 	};
 
 	const handleAddDomainClick = () => {
@@ -71,7 +100,13 @@ export function Dashboard() {
 						<section style="flex: 1">
 							<section style="display: flex; gap: 12px;">
 								{/* Calendar with performance scores*/}
-								<div style="flex: 1; height: 244px;"></div>
+								<div style="flex: 1;">
+									<PerformanceCalendar
+										domainId={selectedDomainId}
+										selectedDate={selectedDate}
+										onDateSelect={handleDateSelect}
+									/>
+								</div>
 								{/* Chart of the scores */}
 								<div style="flex: 1"></div>
 							</section>

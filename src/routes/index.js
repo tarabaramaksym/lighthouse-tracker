@@ -5,10 +5,12 @@ const authRoutes = require('./auth');
 const apiRoutes = require('./api');
 const domainRoutes = require('./domains');
 const urlRoutes = require('./urls');
+const issueRoutes = require('./issues');
 
 router.use('/auth', authRoutes);
 router.use('/domains', domainRoutes);
 router.use('/', urlRoutes);
+router.use('/', issueRoutes);
 router.use('/', apiRoutes);
 
 module.exports = router; 

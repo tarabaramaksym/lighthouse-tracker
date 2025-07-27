@@ -94,6 +94,26 @@ class ApiService {
 			return response.data;
 		},
 	};
+
+	public issues = {
+		getDailyIssues: async (domainId: number, date?: string): Promise<any> => {
+			const url = date
+				? `/api/domains/${domainId}/daily/${date}`
+				: `/api/domains/${domainId}/daily`;
+			const response: AxiosResponse<any> = await this.api.get(url);
+			return response.data;
+		},
+
+		getCalendarData: async (domainId: number, year: number, month: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/calendar/${year}/${month}`);
+			return response.data;
+		},
+
+		getOldestDate: async (domainId: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/oldest-date`);
+			return response.data;
+		},
+	};
 }
 
 export const apiService = new ApiService(); 
