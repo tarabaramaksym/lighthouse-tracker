@@ -1,18 +1,27 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'preact/compat';
 import dayPng from '@/assets/calendar_day.png';
 import nightPng from '@/assets/calendar_night.png';
 import clouds from '@/assets/clouds.png';
-import './Home.css';
+import day from '@/assets/day.png';
+import evening from '@/assets/evening.png';
+import night from '@/assets/night.png';
 import { LighthouseEffect } from '@/components/LighthouseEffect';
+import './Home.css';
 
 export function Home() {
 	const navigate = useNavigate();
+	const [isYearly, setIsYearly] = useState(false);
 
 	const handleSignIn = () => {
 		navigate('/auth?type=login');
 	};
 
 	const handleSignUp = () => {
+		navigate('/auth?type=signup');
+	};
+
+	const handlePricingSignUp = () => {
 		navigate('/auth?type=signup');
 	};
 
@@ -57,6 +66,106 @@ export function Home() {
 						<div className="feature-card">
 							<h4>Best Practices</h4>
 							<p>Follow web development best practices and standards.</p>
+						</div>
+						<div className="feature-card">
+							<h4>Alert System</h4>
+							<p>Get notified about performance issues and regressions as they occur.</p>
+						</div>
+						<div className="feature-card">
+							<h4>Development Tracking</h4>
+							<p>Monitor development instances to catch issues before they reach production.</p>
+						</div>
+					</div>
+				</section>
+
+				<section className="pricing-section">
+					<h3>Choose Your Plan</h3>
+					<div className="pricing-toggle">
+						<span className={!isYearly ? 'active' : ''}>Monthly</span>
+						<button
+							className={`toggle-button ${isYearly ? 'active' : ''}`}
+							onClick={() => setIsYearly(!isYearly)}
+						>
+							<div className="toggle-slider"></div>
+						</button>
+						<span className={isYearly ? 'active' : ''}>
+							Yearly <span className="discount">Save 50%</span>
+						</span>
+					</div>
+					<div className="pricing-grid">
+						<div className="pricing-card" style={{ backgroundImage: `url(${night})` }}>
+							<div className="pricing-header">
+								<h4>Free</h4>
+								<div className="price" style="opacity:0;">
+									<span className="currency">$</span>
+									<span className="amount">0</span>
+									<span className="period">/month</span>
+								</div>
+								<div className="yearly-total" style="opacity: 0">$191.88 billed yearly</div>
+							</div>
+							<div className="pricing-features">
+								<div className="feature">
+									<span className="check">✓</span>
+									<span>1 domain</span>
+								</div>
+								<div className="feature">
+									<span className="check">✓</span>
+									<span>5 URLs per domain</span>
+								</div>
+							</div>
+							<button onClick={handlePricingSignUp} className="btn btn-secondary">
+								Get Started Free
+							</button>
+						</div>
+
+						<div className="pricing-card featured" style={{ backgroundImage: `url(${evening})` }}>
+							<div className="pricing-header">
+								<h4>Pro</h4>
+								<div className="price">
+									<span className="currency">$</span>
+									<span className="amount">{isYearly ? '4.99' : '9.99'}</span>
+									<span className="period">/month</span>
+								</div>
+								<div className="yearly-total" style={isYearly ? '' : 'opacity: 0'}>$59.88 billed yearly</div>
+							</div>
+							<div className="pricing-features">
+								<div className="feature">
+									<span className="check">✓</span>
+									<span>5 domains</span>
+								</div>
+								<div className="feature">
+									<span className="check">✓</span>
+									<span>100 URLs per domain</span>
+								</div>
+							</div>
+							<button onClick={handlePricingSignUp} className="btn btn-primary">
+								Start Pro Plan
+							</button>
+						</div>
+
+						<div className="pricing-card" style={{ backgroundImage: `url(${day})` }}>
+							<div className="pricing-header">
+								<h4>Pro+</h4>
+								<div className="price">
+									<span className="currency">$</span>
+									<span className="amount">{isYearly ? '9.99' : '19.99'}</span>
+									<span className="period">/month</span>
+								</div>
+								<div className="yearly-total" style={isYearly ? '' : 'opacity: 0'}>$119.88 billed yearly</div>
+							</div>
+							<div className="pricing-features">
+								<div className="feature">
+									<span className="check">✓</span>
+									<span>1000 domains</span>
+								</div>
+								<div className="feature">
+									<span className="check">✓</span>
+									<span>10,000 URLs per domain</span>
+								</div>
+							</div>
+							<button onClick={handlePricingSignUp} className="btn btn-secondary">
+								Start Pro+ Plan
+							</button>
 						</div>
 					</div>
 				</section>

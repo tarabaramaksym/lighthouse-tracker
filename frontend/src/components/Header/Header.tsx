@@ -6,7 +6,7 @@ import './Header.css';
 export function Header() {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { logout } = useAuth();
+	const { logout, isAuthenticated } = useAuth();
 
 	const isHomePage = location.pathname === '/';
 	const isAuthPage = location.pathname === '/auth';
@@ -25,6 +25,10 @@ export function Header() {
 		navigate('/');
 	};
 
+	const handleGoToDashboard = () => {
+		navigate('/dashboard');
+	};
+
 	return (
 		<header className="header">
 			<div className="header-nav">
@@ -35,7 +39,7 @@ export function Header() {
 					</h1>
 				</Link>
 				<div className="header-actions">
-					{isHomePage && (
+					{isHomePage && !isAuthenticated && (
 						<>
 							<button onClick={handleSignIn} className="btn btn-secondary">
 								Sign In
@@ -44,6 +48,11 @@ export function Header() {
 								Sign Up
 							</button>
 						</>
+					)}
+					{isHomePage && isAuthenticated && (
+						<button onClick={handleGoToDashboard} className="btn btn-primary">
+							Dashboard
+						</button>
 					)}
 					{isDashboardPage && (
 						<button onClick={handleLogout} className="btn btn-secondary">
