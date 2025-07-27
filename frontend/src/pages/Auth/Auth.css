@@ -7,6 +7,7 @@
 	grid-template-columns: 444px 1fr;
 	height: 531px;
 	position: relative;
+	margin-top: 48px;
 }
 
 .auth-card {

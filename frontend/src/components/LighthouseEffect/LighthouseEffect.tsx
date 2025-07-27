@@ -65,16 +65,16 @@ export function LighthouseEffect({ dayImageUrl, nightImageUrl, borderRadius = '0
 			const rect = nightImageRef.current.getBoundingClientRect();
 			canvas.width = rect.width;
 			canvas.height = rect.height;
-			canvas.style.left = `${rect.left}px`;
-			canvas.style.top = `${rect.top}px`;
+			//canvas.style.left = `${rect.left}px`;
+			//canvas.style.top = `${rect.top}px`;
 			canvas.style.width = `${rect.width}px`;
 			canvas.style.height = `${rect.height}px`;
 
 			if (textCanvas) {
 				textCanvas.width = rect.width;
 				textCanvas.height = rect.height;
-				textCanvas.style.left = `${rect.left}px`;
-				textCanvas.style.top = `${rect.top}px`;
+				//textCanvas.style.left = `${rect.left}px`;
+				//textCanvas.style.top = `${rect.top}px`;
 				textCanvas.style.width = `${rect.width}px`;
 				textCanvas.style.height = `${rect.height}px`;
 			}
@@ -259,25 +259,29 @@ export function LighthouseEffect({ dayImageUrl, nightImageUrl, borderRadius = '0
 		<>
 			<div class="lighthouse-effect-container" style={{ borderRadius }}>
 				<img ref={nightImageRef} src={nightImageUrl} alt="Night" style={{ borderRadius }} />
+				<canvas
+					ref={canvasRef}
+					style={{
+						top: '0',
+						left: '0',
+						position: 'absolute',
+						pointerEvents: 'none',
+						zIndex: 1,
+					}}
+				/>
+				<canvas
+					ref={textCanvasRef}
+					style={{
+						top: '0',
+						left: '0',
+						position: 'absolute',
+						pointerEvents: 'none',
+						zIndex: 4,
+					}}
+				/>
 			</div>
 
-			<canvas
-				ref={canvasRef}
-				style={{
-					position: isFixed ? 'fixed' : 'absolute',
-					pointerEvents: 'none',
-					zIndex: 1,
-				}}
-			/>
 
-			<canvas
-				ref={textCanvasRef}
-				style={{
-					position: isFixed ? 'fixed' : 'absolute',
-					pointerEvents: 'none',
-					zIndex: 4,
-				}}
-			/>
 		</>
 	);
 };

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import dayPng from '@/assets/calendar_day.png';
 import nightPng from '@/assets/calendar_night.png';
-import logo from '@/assets/logo.png';
+import clouds from '@/assets/clouds.png';
 import './Home.css';
 import { LighthouseEffect } from '@/components/LighthouseEffect';
 
@@ -18,23 +18,6 @@ export function Home() {
 
 	return (
 		<div className="home-container">
-			<header className="home-header">
-				<div className="home-nav">
-					<h1 className="home-logo">
-						<img src={logo} alt="Lightkeeper websites logo"></img>
-						Lighthouse Keeper
-					</h1>
-					<div className="home-actions">
-						<button onClick={handleSignIn} className="btn btn-secondary">
-							Sign In
-						</button>
-						<button onClick={handleSignUp} className="btn btn-primary">
-							Sign Up
-						</button>
-					</div>
-				</div>
-			</header>
-
 			<main className="home-main">
 				<section className="hero-section">
 					<div>
@@ -56,6 +39,7 @@ export function Home() {
 				</section>
 
 				<section className="features-section">
+					<img className="clouds" src={clouds} alt="Image of clouds"></img>
 					<h3>Why Choose Lighthouse Keeper?</h3>
 					<div className="features-grid">
 						<div className="feature-card">

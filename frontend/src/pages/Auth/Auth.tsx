@@ -46,7 +46,7 @@ export function Auth() {
 				</div>
 			</div>
 			<div className="lighthouse-gif">
-				<LighthouseEffect borderRadius="16px" isFixed dayImageUrl={dayPng} nightImageUrl={nightPng} />
+				<LighthouseEffect borderRadius="16px" dayImageUrl={dayPng} nightImageUrl={nightPng} />
 			</div>
 		</div>
 	);

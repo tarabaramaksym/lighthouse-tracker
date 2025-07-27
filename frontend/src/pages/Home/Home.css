@@ -1,50 +1,5 @@
-.home-header {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	background: rgba(255, 255, 255, 0.95);
-	backdrop-filter: blur(10px);
-	border-bottom: 1px solid var(--color-border);
-	z-index: 1000;
-	padding: 16px 0;
-}
-
-.home-nav {
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 0 24px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.home-logo {
-	color: var(--color-text);
-	margin: 0;
-	font-size: 24px;
-	font-weight: 700;
-
-	img {
-		width: 32px;
-		height: 32px;
-		position: relative;
-		top: 4px;
-		margin-right: 4px;
-	}
-}
-
-.home-actions {
-	display: flex;
-	gap: 12px;
-}
-
-.home-actions .btn {
-	padding: 10px 20px;
-}
-
 .home-main {
-	padding-top: 80px;
+	padding-top: 40px;
 }
 
 .hero-section {
@@ -88,6 +43,12 @@
 	padding: 80px 24px;
 	max-width: 1200px;
 	margin: 0 auto;
+
+	img.clouds {
+		position: absolute;
+		translate: -50%;
+		z-index: -1;
+	}
 }
 
 .features-section h3 {

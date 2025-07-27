@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Home } from '@/pages/Home';
 import { Test } from '@/pages/Test';
@@ -49,28 +49,26 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 export function AppRouter() {
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/test" element={<Test />} />
-				<Route
-					path="/auth"
-					element={
-						<PublicRoute>
-							<Auth />
-						</PublicRoute>
-					}
-				/>
-				<Route
-					path="/dashboard"
-					element={
-						<ProtectedRoute>
-							<Dashboard />
-						</ProtectedRoute>
-					}
-				/>
-				<Route path="*" element={<Navigate to="/" replace />} />
-			</Routes>
-		</BrowserRouter>
+		<Routes>
+			<Route path="/" element={<Home />} />
+			<Route path="/test" element={<Test />} />
+			<Route
+				path="/auth"
+				element={
+					<PublicRoute>
+						<Auth />
+					</PublicRoute>
+				}
+			/>
+			<Route
+				path="/dashboard"
+				element={
+					<ProtectedRoute>
+						<Dashboard />
+					</ProtectedRoute>
+				}
+			/>
+			<Route path="*" element={<Navigate to="/" replace />} />
+		</Routes>
 	);
 } 
