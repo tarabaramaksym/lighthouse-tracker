@@ -8,10 +8,14 @@ import { UrlList } from '@/components/UrlList';
 import { UrlForm } from '@/components/UrlForm';
 import { PerformanceCalendar } from '@/components/PerformanceCalendar';
 import { ScoresBreakdown } from '@/components/ScoresBreakdown';
+import { ScoresChart, ChartControls } from '@/components/ScoresChart';
 import { FormContainer } from '@/components/FormContainer';
+import { useDataCache } from '@/hooks/useDataCache';
+import { apiService } from '@/services/api';
 import './Dashboard.css';
 
 type FormState = 'none' | 'domain' | 'url';
+type ViewState = 'main' | 'charts';
 
 export function Dashboard() {
 	const { user } = useAuth();
@@ -20,6 +24,13 @@ export function Dashboard() {
 	const [selectedWebsiteId, setSelectedWebsiteId] = useState<number | null>(null);
 	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 	const [formState, setFormState] = useState<FormState>('none');
+	const [viewState, setViewState] = useState<ViewState>('main');
+	const [chartDateRange, setChartDateRange] = useState<'7d' | '14d' | '30d'>('7d');
+	const [selectedChartMetrics, setSelectedChartMetrics] = useState<('performance' | 'accessibility' | 'best_practices' | 'seo' | 'pwa')[]>(['performance', 'accessibility', 'best_practices', 'seo', 'pwa']);
+	const cache = useDataCache();
+	const [dailyData, setDailyData] = useState<any>(null);
+	const [isLoadingDaily, setIsLoadingDaily] = useState(false);
+	const [dailyError, setDailyError] = useState<string | null>(null);
 
 	const domainIdFromUrl = searchParams.get('domain');
 	const websiteIdFromUrl = searchParams.get('website');
@@ -44,6 +55,39 @@ export function Dashboard() {
 			setSelectedDate(dateFromUrl);
 		}
 	}, [domainIdFromUrl, websiteIdFromUrl, dateFromUrl]);
+
+	useEffect(() => {
+		if (selectedDomainId && selectedWebsiteId && selectedDate) {
+			fetchDailyData();
+		} else {
+			setDailyData(null);
+		}
+	}, [selectedDomainId, selectedWebsiteId, selectedDate]);
+
+	const fetchDailyData = async () => {
+		if (!selectedDomainId || !selectedWebsiteId || !selectedDate) return;
+
+		// Check cache first
+		const cachedData = cache.get(selectedDomainId, selectedWebsiteId, selectedDate);
+		if (cachedData) {
+			setDailyData(cachedData);
+			return;
+		}
+
+		try {
+			setIsLoadingDaily(true);
+			setDailyError(null);
+			const response = await apiService.issues.getDailyIssues(selectedDomainId, selectedWebsiteId, selectedDate);
+			setDailyData(response.data);
+
+			// Cache the response
+			cache.set(selectedDomainId, selectedWebsiteId, selectedDate, response.data);
+		} catch (err: any) {
+			setDailyError(err.message || 'Failed to fetch daily data');
+		} finally {
+			setIsLoadingDaily(false);
+		}
+	};
 
 	const handleDomainChange = (domainId: number) => {
 		setSelectedDomainId(domainId);
@@ -107,6 +151,24 @@ export function Dashboard() {
 		setFormState('none');
 	};
 
+	const handleChartDateRangeChange = (range: '7d' | '14d' | '30d') => {
+		setChartDateRange(range);
+	};
+
+	const handleChartMetricToggle = (metric: 'performance' | 'accessibility' | 'best_practices' | 'seo' | 'pwa') => {
+		setSelectedChartMetrics(prev => {
+			if (prev.includes(metric)) {
+				return prev.filter(m => m !== metric);
+			} else {
+				return [...prev, metric];
+			}
+		});
+	};
+
+	const handleViewChange = (view: ViewState) => {
+		setViewState(view);
+	};
+
 	const renderMainContent = () => {
 		switch (formState) {
 			case 'domain':
@@ -137,33 +199,74 @@ export function Dashboard() {
 							/>
 						</section>
 						<section style="flex: 1">
-							<section style="display: flex; gap: 12px;">
-								{/* Calendar with performance scores*/}
-								<div style="flex: 1;">
-									<PerformanceCalendar
-										domainId={selectedDomainId}
-										websiteId={selectedWebsiteId}
-										selectedDate={selectedDate}
-										onDateSelect={handleDateSelect}
-									/>
-								</div>
-								{/* Chart of the scores */}
-								<div style="flex: 1"></div>
-							</section>
-							<section>
-								{/* Breakdown with current scores for selected date*/}
-								<div style="margin-top: 24px;">
-									<ScoresBreakdown
-										domainId={selectedDomainId}
-										websiteId={selectedWebsiteId}
-										selectedDate={selectedDate}
-									/>
-								</div>
-							</section>
-							<section>
-								{/* All issues for selected date */}
-								<div style="margin-top: 24px; height: 484px;"></div>
-							</section>
+							<div className="view-tabs">
+								<button
+									className={`view-tab ${viewState === 'main' ? 'active' : ''}`}
+									onClick={() => handleViewChange('main')}
+									aria-label="Main Dashboard View"
+								>
+									📊
+								</button>
+								<button
+									className={`view-tab ${viewState === 'charts' ? 'active' : ''}`}
+									onClick={() => handleViewChange('charts')}
+									aria-label="Charts View"
+								>
+									📈
+								</button>
+							</div>
+							{viewState === 'main' ? (
+								<>
+									<section>
+										{/* Calendar with performance scores*/}
+										<div style="flex: 1; width: fit-content;">
+											<PerformanceCalendar
+												domainId={selectedDomainId}
+												websiteId={selectedWebsiteId}
+												selectedDate={selectedDate}
+												onDateSelect={handleDateSelect}
+											/>
+										</div>
+									</section>
+									<section>
+										{/* Breakdown with current scores for selected date*/}
+										<div style="margin-top: 24px;">
+											<ScoresBreakdown
+												domainId={selectedDomainId}
+												websiteId={selectedWebsiteId}
+												selectedDate={selectedDate}
+												data={dailyData}
+												isLoading={isLoadingDaily}
+												error={dailyError}
+											/>
+										</div>
+									</section>
+									<section>
+										{/* All issues for selected date */}
+										<div style="margin-top: 24px; height: 484px;"></div>
+									</section>
+								</>
+							) : (
+								<section>
+									{/* Chart of the scores */}
+									<div style="flex: 1; display: flex; flex-direction: column;">
+										<ChartControls
+											dateRange={chartDateRange}
+											onDateRangeChange={handleChartDateRangeChange}
+											selectedMetrics={selectedChartMetrics}
+											onMetricToggle={handleChartMetricToggle}
+										/>
+										<ScoresChart
+											domainId={selectedDomainId}
+											websiteId={selectedWebsiteId}
+											dateRange={chartDateRange}
+											selectedMetrics={selectedChartMetrics}
+											height={600}
+											cache={cache}
+										/>
+									</div>
+								</section>
+							)}
 						</section>
 					</section>
 				);

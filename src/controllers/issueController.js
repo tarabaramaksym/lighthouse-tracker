@@ -298,8 +298,89 @@ const getOldestDate = async (req, res) => {
   }
 };
 
+const getChartData = async (req, res) => {
+  try {
+    const { domainId, websiteId, days } = req.params;
+    
+    const domain = await Domain.findOne({
+      where: { id: domainId, user_id: req.user.id }
+    });
+
+    if (!domain) {
+      return res.status(404).json({
+        success: false,
+        message: 'Domain not found'
+      });
+    }
+
+    const website = await Website.findOne({
+      where: { id: websiteId, domain_id: domainId }
+    });
+
+    if (!website) {
+      return res.status(404).json({
+        success: false,
+        message: 'Website not found'
+      });
+    }
+
+    const daysAgo = new Date();
+    daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+
+    const records = await Record.findAll({
+      include: [
+        {
+          model: Website,
+          as: 'website',
+          where: { id: websiteId, domain_id: domainId }
+        }
+      ],
+      where: {
+        createdAt: {
+          [Op.gte]: daysAgo
+        }
+      },
+      order: [['createdAt', 'ASC']],
+      attributes: [
+        'createdAt',
+        'performance_score',
+        'accessibility_score',
+        'best_practices_score',
+        'seo_score',
+        'pwa_score'
+      ]
+    });
+
+    const chartData = records.map(record => {
+      const recordDate = new Date(record.createdAt);
+      const localDate = new Date(recordDate.getTime() - (recordDate.getTimezoneOffset() * 60000));
+      
+      return {
+        date: localDate.toISOString().split('T')[0],
+        performance: record.performance_score || 0,
+        accessibility: record.accessibility_score || 0,
+        best_practices: record.best_practices_score || 0,
+        seo: record.seo_score || 0,
+        pwa: record.pwa_score || 0
+      };
+    });
+
+    res.json({
+      success: true,
+      data: chartData
+    });
+  } catch (error) {
+    console.error('Get chart data error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve chart data'
+    });
+  }
+};
+
 module.exports = {
   getDailyIssues,
   getCalendarData,
-  getOldestDate
+  getOldestDate,
+  getChartData
 }; 

@@ -113,6 +113,11 @@ class ApiService {
 			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/oldest-date`);
 			return response.data;
 		},
+
+		getChartData: async (domainId: number, websiteId: number, days: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/chart/${days}`);
+			return response.data;
+		},
 	};
 }
 

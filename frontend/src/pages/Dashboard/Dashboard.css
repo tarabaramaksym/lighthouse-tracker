@@ -5,7 +5,7 @@
 
 .dashboard-content {
 	padding: 32px;
-	max-width: 1200px;
+	max-width: 1340px;
 	margin: 0 auto;
 }
 
@@ -45,4 +45,35 @@
 	div {
 		border: 1px solid black;
 	}
+}
+
+.view-tabs {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.view-tab {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border: 1px solid var(--color-gray-2);
+	background: white;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 20px;
+	transition: all 0.2s ease;
+}
+
+.view-tab:hover {
+	background-color: var(--color-gray-1);
+	border-color: var(--color-gray-3);
+}
+
+.view-tab.active {
+	background-color: var(--color-primary-1);
+	color: white;
+	border-color: var(--color-primary-1);
 }

@@ -64,7 +64,6 @@
 }
 
 .url-path {
-	color: var(--color-gray-4);
 	font-size: 14px;
 	font-family: monospace;
 }

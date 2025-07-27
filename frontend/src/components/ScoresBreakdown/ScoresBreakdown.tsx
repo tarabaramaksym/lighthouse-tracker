@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'preact/compat';
 import { apiService } from '@/services/api';
-import { useDataCache } from '@/hooks/useDataCache';
 import './ScoresBreakdown.css';
 
 interface DailyData {
@@ -34,49 +33,17 @@ interface ScoresBreakdownProps {
 	domainId: number | null;
 	websiteId: number | null;
 	selectedDate: string | null;
+	data: any;
+	isLoading: boolean;
+	error: string | null;
 }
 
 type TabType = 'performance' | 'accessibility' | 'best-practices' | 'seo' | 'pwa';
 
-export function ScoresBreakdown({ domainId, websiteId, selectedDate }: ScoresBreakdownProps) {
-	const [data, setData] = useState<DailyData | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoading, error }: ScoresBreakdownProps) {
 	const [selectedTab, setSelectedTab] = useState<TabType>('performance');
-	const cache = useDataCache();
 
-	useEffect(() => {
-		if (domainId && websiteId && selectedDate) {
-			fetchDailyData();
-		} else {
-			setData(null);
-		}
-	}, [domainId, websiteId, selectedDate]);
 
-	const fetchDailyData = async () => {
-		if (!domainId || !websiteId || !selectedDate) return;
-
-		// Check cache first
-		const cachedData = cache.get(domainId, websiteId, selectedDate);
-		if (cachedData) {
-			setData(cachedData);
-			return;
-		}
-
-		try {
-			setIsLoading(true);
-			setError(null);
-			const response = await apiService.issues.getDailyIssues(domainId, websiteId, selectedDate);
-			setData(response.data);
-
-			// Cache the response
-			cache.set(domainId, websiteId, selectedDate, response.data);
-		} catch (err: any) {
-			setError(err.message || 'Failed to fetch daily data');
-		} finally {
-			setIsLoading(false);
-		}
-	};
 
 	const getScoreColor = (score: number): string => {
 		if (score >= 90) return 'green';
