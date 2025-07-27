@@ -5,9 +5,9 @@ import '@/styles/common.css';
 import '@/styles/colors.css';
 
 export function App() {
-  return (
-    <AuthProvider>
-      <AppRouter />
-    </AuthProvider>
-  );
+	return (
+		<AuthProvider>
+			<AppRouter />
+		</AuthProvider>
+	);
 }

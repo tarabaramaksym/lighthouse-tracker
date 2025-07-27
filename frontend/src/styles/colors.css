@@ -3,17 +3,17 @@
 	--color-white: rgb(250, 250, 250);
 	--color-primary-1: #102f4d;
 	--color-secondary-1: #70b1dc;
-	
+
 	/* Gray scale */
 	--color-gray-1: #f5f5f5;
 	--color-gray-2: #e1e5e9;
 	--color-gray-3: #999;
-	
+
 	/* Error colors */
 	--color-error-bg: #fee;
 	--color-error-text: #c33;
 	--color-error-border: #fcc;
-	
+
 	/* Success colors */
 	--color-success-bg: #efe;
 	--color-success-text: #363;

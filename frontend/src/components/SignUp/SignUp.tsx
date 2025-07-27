@@ -2,94 +2,94 @@ import { useState } from 'preact/hooks';
 import { useAuth } from '@/hooks/useAuth';
 
 export function SignUp() {
-  const { register, error, clearError } = useAuth();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [validationError, setValidationError] = useState('');
+	const { register, error, clearError } = useAuth();
+	const [formData, setFormData] = useState({
+		email: '',
+		password: '',
+		confirmPassword: ''
+	});
+	const [validationError, setValidationError] = useState('');
 
-  const handleChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    setFormData(prev => ({
-      ...prev,
-      [target.name]: target.value
-    }));
-    if (error) clearError();
-    if (validationError) setValidationError('');
-  };
+	const handleChange = (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		setFormData(prev => ({
+			...prev,
+			[target.name]: target.value
+		}));
+		if (error) clearError();
+		if (validationError) setValidationError('');
+	};
 
-  const handleSubmit = async (e: Event) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      setValidationError('Passwords do not match');
-      return;
-    }
+	const handleSubmit = async (e: Event) => {
+		e.preventDefault();
 
-    try {
-      await register({
-        email: formData.email,
-        password: formData.password
-      });
-    } catch (err) {
-      // Error is handled by the context
-    }
-  };
+		if (formData.password !== formData.confirmPassword) {
+			setValidationError('Passwords do not match');
+			return;
+		}
 
-  return (
-    <form onSubmit={handleSubmit} className="form-container">
-      {(error || validationError) && (
-        <div className="error-message">{error || validationError}</div>
-      )}
-      
-      <div className="form-group">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          placeholder="Enter your email"
-        />
-      </div>
+		try {
+			await register({
+				email: formData.email,
+				password: formData.password
+			});
+		} catch (err) {
+			// Error is handled by the context
+		}
+	};
 
-      <div className="form-group">
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          placeholder="Enter your password"
-          minLength={6}
-        />
-      </div>
+	return (
+		<form onSubmit={handleSubmit} className="form-container">
+			{(error || validationError) && (
+				<div className="error-message">{error || validationError}</div>
+			)}
 
-      <div className="form-group">
-        <label htmlFor="confirmPassword">Confirm Password</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          placeholder="Confirm your password"
-          minLength={6}
-        />
-      </div>
+			<div className="form-group">
+				<label htmlFor="email">Email</label>
+				<input
+					type="email"
+					id="email"
+					name="email"
+					value={formData.email}
+					onChange={handleChange}
+					required
+					placeholder="Enter your email"
+				/>
+			</div>
 
-      <button type="submit" className="btn btn-primary mt-10">
-        Sign Up
-      </button>
-    </form>
-  );
+			<div className="form-group">
+				<label htmlFor="password">Password</label>
+				<input
+					type="password"
+					id="password"
+					name="password"
+					value={formData.password}
+					onChange={handleChange}
+					required
+					placeholder="Enter your password"
+					minLength={6}
+				/>
+			</div>
+
+			<div className="form-group">
+				<label htmlFor="confirmPassword">Confirm Password</label>
+				<input
+					type="password"
+					id="confirmPassword"
+					name="confirmPassword"
+					value={formData.confirmPassword}
+					onChange={handleChange}
+					required
+					placeholder="Confirm your password"
+					minLength={6}
+				/>
+			</div>
+
+			<button type="submit" className="btn btn-primary mt-10">
+				Sign Up
+			</button>
+		</form>
+	);
 }
 
 export default SignUp;
