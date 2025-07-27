@@ -60,6 +60,40 @@ class ApiService {
 			return response.data;
 		},
 	};
+
+	public domains = {
+		getDomains: async (): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get('/api/domains');
+			return response.data;
+		},
+
+		createDomain: async (url: string): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.post('/api/domains', { url });
+			return response.data;
+		},
+
+		deleteDomain: async (id: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.delete(`/api/domains/${id}`);
+			return response.data;
+		},
+	};
+
+	public urls = {
+		getUrls: async (domainId: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/urls`);
+			return response.data;
+		},
+
+		createUrl: async (domainId: number, path: string): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.post(`/api/domains/${domainId}/urls`, { path });
+			return response.data;
+		},
+
+		deleteUrl: async (id: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.delete(`/api/urls/${id}`);
+			return response.data;
+		},
+	};
 }
 
 export const apiService = new ApiService(); 

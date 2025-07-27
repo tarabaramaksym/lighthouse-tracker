@@ -7,10 +7,9 @@ interface LighthouseEffectProps {
 	borderRadius?: string;
 	radius?: number;
 	auto?: boolean;
-	isFixed?: boolean;
 }
 
-export function LighthouseEffect({ dayImageUrl, nightImageUrl, borderRadius = '0', radius = 200, auto = false, isFixed = false }: LighthouseEffectProps) {
+export function LighthouseEffect({ dayImageUrl, nightImageUrl, borderRadius = '0', radius = 200, auto = false }: LighthouseEffectProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const dayImageRef = useRef<HTMLImageElement | null>(null);
 

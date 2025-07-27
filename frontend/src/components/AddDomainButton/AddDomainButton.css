@@ -1,0 +1,23 @@
+.add-domain-button {
+	height: 44px;
+	margin-left: 12px;
+	border: 1px solid var(--color-gray-2);
+	border-radius: 8px;
+	background-color: white;
+	color: var(--color-gray-4);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.add-domain-button:hover {
+	border-color: var(--color-primary-1);
+	color: var(--color-primary-1);
+	background-color: var(--color-primary-light-1);
+}
+
+.add-domain-button:active {
+	transform: scale(0.95);
+}

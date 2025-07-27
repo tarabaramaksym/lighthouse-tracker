@@ -18,6 +18,11 @@ module.exports = (sequelize) => {
         model: 'users',
         key: 'id'
       }
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'inactive'),
+      allowNull: false,
+      defaultValue: 'active'
     }
   }, {
     timestamps: true,

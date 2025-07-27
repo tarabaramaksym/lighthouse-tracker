@@ -1,45 +1,116 @@
 import { useAuth } from '@/hooks/useAuth';
+import { useState } from 'preact/compat';
+import { DomainDropdown } from '@/components/DomainDropdown';
+import { AddDomainButton } from '@/components/AddDomainButton';
+import { DomainForm } from '@/components/DomainForm';
+import { UrlList } from '@/components/UrlList';
+import { UrlForm } from '@/components/UrlForm';
+import { FormContainer } from '@/components/FormContainer';
 import './Dashboard.css';
 
+type FormState = 'none' | 'domain' | 'url';
+
 export function Dashboard() {
-	const { user, logout } = useAuth();
+	const { user } = useAuth();
+	const [selectedDomainId, setSelectedDomainId] = useState<number | null>(null);
+	const [formState, setFormState] = useState<FormState>('none');
+
+	const handleDomainChange = (domainId: number) => {
+		setSelectedDomainId(domainId);
+	};
+
+	const handleAddDomainClick = () => {
+		setFormState('domain');
+	};
+
+	const handleDomainCreated = () => {
+		setFormState('none');
+		window.location.reload();
+	};
+
+	const handleCancelDomainForm = () => {
+		setFormState('none');
+	};
+
+	const handleAddUrlClick = () => {
+		setFormState('url');
+	};
+
+	const handleUrlCreated = () => {
+		setFormState('none');
+		window.location.reload();
+	};
+
+	const handleCancelUrlForm = () => {
+		setFormState('none');
+	};
+
+	const renderMainContent = () => {
+		switch (formState) {
+			case 'domain':
+				return (
+					<DomainForm
+						onDomainCreated={handleDomainCreated}
+						onCancel={handleCancelDomainForm}
+					/>
+				);
+			case 'url':
+				return (
+					<UrlForm
+						domainId={selectedDomainId!}
+						onUrlCreated={handleUrlCreated}
+						onCancel={handleCancelUrlForm}
+					/>
+				);
+			default:
+				return (
+					<section style="display: flex;">
+						<section style="margin-right: 24px; width: 300px;">
+							<UrlList domainId={selectedDomainId} onAddUrl={handleAddUrlClick} />
+						</section>
+						<section style="flex: 1">
+							<section style="display: flex; gap: 12px;">
+								{/* Calendar with performance scores*/}
+								<div style="flex: 1; height: 244px;"></div>
+								{/* Chart of the scores */}
+								<div style="flex: 1"></div>
+							</section>
+							<section>
+								{/* Breakdown with current scores for selected date*/}
+								<div style="margin-top: 24px; height: 284px;"></div>
+							</section>
+							<section>
+								{/* All issues for selected date */}
+								<div style="margin-top: 24px; height: 484px;"></div>
+							</section>
+						</section>
+					</section>
+				);
+		}
+	};
 
 	return (
 		<div className="dashboard-container">
-			<header className="dashboard-header">
-				<div className="dashboard-title">
-					<h1>Lighthouse Keeper Dashboard</h1>
-					<p>Welcome back, {user?.email}!</p>
-				</div>
-				<button onClick={logout} className="btn btn-secondary">
-					Logout
-				</button>
-			</header>
-
 			<main className="dashboard-content">
-				<div className="dashboard-card">
-					<h2>Getting Started</h2>
-					<p>
-						Welcome to Lighthouse Keeper! This is your main dashboard where you'll be able to:
-					</p>
-					<ul>
-						<li>Add and manage your websites</li>
-						<li>Run Lighthouse audits</li>
-						<li>View performance reports</li>
-						<li>Track improvements over time</li>
-						<li>Analyze SEO and accessibility scores</li>
-					</ul>
-					<p>
-						The dashboard is currently under development. More features will be available soon!
-					</p>
-				</div>
-
-				<div className="dashboard-card">
-					<h2>Quick Stats</h2>
-					<p>Your website monitoring statistics will appear here.</p>
-				</div>
+				{/* Dashbaard top settings area */}
+				<section style="display: flex; justify-content: space-between; margin-bottom: 24px">
+					<section style="display: flex;">
+						<DomainDropdown
+							selectedDomainId={selectedDomainId}
+							onDomainChange={handleDomainChange}
+						/>
+						<AddDomainButton onClick={handleAddDomainClick} />
+					</section>
+					<section style="display: flex;">
+						{/* Settings & Alerts buttons*/}
+						<div style="margin-right: 12px; width: 44px; height: 44px;"></div>
+						<div style="width: 44px; height: 44px;"></div>
+					</section>
+				</section>
+				{/* Main content area */}
+				{renderMainContent()}
 			</main>
-		</div>
+		</div >
 	);
 }
 

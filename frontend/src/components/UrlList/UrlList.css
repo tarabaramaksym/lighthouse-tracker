@@ -1,0 +1,97 @@
+.url-list {
+	width: 100%;
+	height: 100%;
+}
+
+.url-list-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--color-gray-2);
+}
+
+.url-list-header h4 {
+	margin: 0;
+	color: var(--color-gray-4);
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.url-list-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.url-count {
+	color: var(--color-gray-3);
+	font-size: 12px;
+	background-color: var(--color-gray-1);
+	padding: 2px 8px;
+	border-radius: 12px;
+}
+
+.url-list-content {
+	height: calc(100% - 40px);
+	overflow-y: auto;
+}
+
+.url-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 16px;
+	margin-bottom: 4px;
+	background-color: white;
+	border: 1px solid var(--color-gray-2);
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+
+.url-item:hover {
+	border-color: var(--color-gray-3);
+	background-color: var(--color-gray-1);
+}
+
+.url-path {
+	color: var(--color-gray-4);
+	font-size: 14px;
+	font-family: monospace;
+}
+
+.url-status {
+	font-size: 11px;
+	padding: 2px 6px;
+	border-radius: 4px;
+	text-transform: uppercase;
+	font-weight: 500;
+}
+
+.url-status-monitoring {
+	background-color: #dcfce7;
+	color: #166534;
+}
+
+.url-status-ignored {
+	background-color: #fef3c7;
+	color: #92400e;
+}
+
+.no-domain-selected,
+.loading-urls,
+.no-urls,
+.error-message {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 200px;
+	color: var(--color-gray-3);
+	font-size: 14px;
+	text-align: center;
+}
+
+.error-message {
+	color: #dc2626;
+}

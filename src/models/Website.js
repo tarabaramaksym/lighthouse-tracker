@@ -18,6 +18,11 @@ module.exports = (sequelize) => {
         model: 'domains',
         key: 'id'
       }
+    },
+    status: {
+      type: DataTypes.ENUM('monitoring', 'ignored'),
+      allowNull: false,
+      defaultValue: 'monitoring'
     }
   }, {
     timestamps: true,
