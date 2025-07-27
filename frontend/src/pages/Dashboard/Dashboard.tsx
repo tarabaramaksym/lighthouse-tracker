@@ -31,6 +31,9 @@ export function Dashboard() {
 	const [dailyData, setDailyData] = useState<any>(null);
 	const [isLoadingDaily, setIsLoadingDaily] = useState(false);
 	const [dailyError, setDailyError] = useState<string | null>(null);
+	const [calendarData, setCalendarData] = useState<any>(null);
+	const [isLoadingCalendar, setIsLoadingCalendar] = useState(false);
+	const [calendarError, setCalendarError] = useState<string | null>(null);
 
 	const domainIdFromUrl = searchParams.get('domain');
 	const websiteIdFromUrl = searchParams.get('website');
@@ -64,6 +67,14 @@ export function Dashboard() {
 		}
 	}, [selectedDomainId, selectedWebsiteId, selectedDate]);
 
+	useEffect(() => {
+		if (selectedDomainId && selectedWebsiteId) {
+			fetchCalendarData();
+		} else {
+			setCalendarData(null);
+		}
+	}, [selectedDomainId, selectedWebsiteId]);
+
 	const fetchDailyData = async () => {
 		if (!selectedDomainId || !selectedWebsiteId || !selectedDate) return;
 
@@ -86,6 +97,36 @@ export function Dashboard() {
 			setDailyError(err.message || 'Failed to fetch daily data');
 		} finally {
 			setIsLoadingDaily(false);
+		}
+	};
+
+	const fetchCalendarData = async () => {
+		if (!selectedDomainId || !selectedWebsiteId) return;
+
+		const currentDate = new Date();
+		const year = currentDate.getFullYear();
+		const month = currentDate.getMonth() + 1;
+		const cacheKey = `${selectedDomainId}-${selectedWebsiteId}-calendar-${year}-${month}`;
+
+		// Check cache first
+		const cachedData = cache.get(selectedDomainId, selectedWebsiteId, cacheKey);
+		if (cachedData) {
+			setCalendarData(cachedData);
+			return;
+		}
+
+		try {
+			setIsLoadingCalendar(true);
+			setCalendarError(null);
+			const response = await apiService.issues.getCalendarData(selectedDomainId, selectedWebsiteId, year, month);
+			setCalendarData(response.data);
+
+			// Cache the response
+			cache.set(selectedDomainId, selectedWebsiteId, cacheKey, response.data);
+		} catch (err: any) {
+			setCalendarError(err.message || 'Failed to fetch calendar data');
+		} finally {
+			setIsLoadingCalendar(false);
 		}
 	};
 
@@ -225,6 +266,9 @@ export function Dashboard() {
 												websiteId={selectedWebsiteId}
 												selectedDate={selectedDate}
 												onDateSelect={handleDateSelect}
+												data={calendarData}
+												isLoading={isLoadingCalendar}
+												error={calendarError}
 											/>
 										</div>
 									</section>

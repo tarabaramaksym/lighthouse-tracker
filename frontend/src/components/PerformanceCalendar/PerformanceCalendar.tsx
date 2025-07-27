@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'preact/compat';
-import { apiService } from '@/services/api';
-import { useDataCache } from '@/hooks/useDataCache';
 import './PerformanceCalendar.css';
 
 interface DailyScore {
@@ -28,50 +26,16 @@ interface PerformanceCalendarProps {
 	websiteId: number | null;
 	selectedDate: string | null;
 	onDateSelect: (date: string) => void;
+	data?: any;
+	isLoading?: boolean;
+	error?: string | null;
 }
 
-export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateSelect }: PerformanceCalendarProps) {
-	const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
+export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateSelect, data, isLoading, error }: PerformanceCalendarProps) {
 	const [currentMonth, setCurrentMonth] = useState(new Date());
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const cache = useDataCache();
+	const calendarData = data;
 
-	useEffect(() => {
-		if (domainId && websiteId) {
-			fetchCalendarData();
-		}
-	}, [domainId, websiteId, currentMonth]);
 
-	const fetchCalendarData = async () => {
-		if (!domainId || !websiteId) return;
-
-		const year = currentMonth.getFullYear();
-		const month = currentMonth.getMonth() + 1;
-		const cacheKey = `${domainId}-${websiteId}-calendar-${year}-${month}`;
-
-		// Check cache first
-		const cachedData = cache.get(domainId, websiteId, cacheKey);
-		if (cachedData) {
-			setCalendarData(cachedData);
-			return;
-		}
-
-		try {
-			setIsLoading(true);
-			setError(null);
-
-			const response = await apiService.issues.getCalendarData(domainId, websiteId, year, month);
-			setCalendarData(response.data);
-
-			// Cache the response
-			cache.set(domainId, websiteId, cacheKey, response.data);
-		} catch (err: any) {
-			setError(err.message || 'Failed to fetch calendar data');
-		} finally {
-			setIsLoading(false);
-		}
-	};
 
 	const getPerformanceColor = (score: number): string => {
 		if (score >= 90) return 'green';
@@ -225,4 +189,6 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 			</div>
 		</div>
 	);
-} 
+}
+
+export default PerformanceCalendar; 
