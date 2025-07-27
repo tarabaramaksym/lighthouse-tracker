@@ -285,10 +285,6 @@ export function Dashboard() {
 											/>
 										</div>
 									</section>
-									<section>
-										{/* All issues for selected date */}
-										<div style="margin-top: 24px; height: 484px;"></div>
-									</section>
 								</>
 							) : (
 								<section>
