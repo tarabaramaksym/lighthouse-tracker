@@ -54,6 +54,31 @@ module.exports = (sequelize) => {
         min: 0,
         max: 100
       }
+    },
+    first_contentful_paint: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      comment: 'First Contentful Paint in seconds (e.g., 1.5)'
+    },
+    largest_contentful_paint: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      comment: 'Largest Contentful Paint in seconds (e.g., 1.8)'
+    },
+    total_blocking_time: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Total Blocking Time in milliseconds (e.g., 210)'
+    },
+    cumulative_layout_shift: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      comment: 'Cumulative Layout Shift score (e.g., 0.169)'
+    },
+    speed_index: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      comment: 'Speed Index in seconds (e.g., 2.9)'
     }
   }, {
     timestamps: true,

@@ -9,6 +9,7 @@
 	--color-gray-1: #f5f5f5;
 	--color-gray-2: #e1e5e9;
 	--color-gray-3: #999;
+	--color-gray-4: #666;
 
 	/* Error colors */
 	--color-error-bg: #fee;
@@ -32,4 +33,11 @@
 	--color-dark-text-secondary: #b0b0b0;
 	--color-dark-border: #333333;
 	--color-dark-hover: #3a3a3a;
+
+	/* Status colors */
+	--color-status-monitoring-bg: #dcfce7;
+	--color-status-monitoring-text: #166534;
+	--color-status-ignored-bg: #fef3c7;
+	--color-status-ignored-text: #92400e;
+	--color-error: #dc2626;
 }

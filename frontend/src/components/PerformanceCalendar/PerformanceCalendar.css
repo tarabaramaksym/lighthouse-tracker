@@ -91,14 +91,16 @@
 	background-color: white;
 }
 
-.calendar-day.current-month:hover {
+.calendar-day:not(.selected).current-month:hover {
 	border-color: var(--color-primary-1);
 	background-color: var(--color-primary-light-1);
+	color: var(--color-white);
 }
 
 .calendar-day.selected {
 	border-color: var(--color-primary-1);
 	background-color: var(--color-primary-light-1);
+	color: var(--color-white);
 }
 
 .day-number {

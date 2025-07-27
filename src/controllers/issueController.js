@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 
 const getDailyIssues = async (req, res) => {
   try {
-    const { domainId, date } = req.params;
+    const { domainId, websiteId, date } = req.params;
     
     const targetDate = date || new Date().toISOString().split('T')[0];
 
@@ -18,27 +18,26 @@ const getDailyIssues = async (req, res) => {
       });
     }
 
-    const startOfDay = new Date(targetDate + 'T00:00:00.000Z');
-    const endOfDay = new Date(targetDate + 'T23:59:59.999Z');
+    const website = await Website.findOne({
+      where: { id: websiteId, domain_id: domainId }
+    });
+
+    if (!website) {
+      return res.status(404).json({
+        success: false,
+        message: 'Website not found'
+      });
+    }
+
+    const startOfDay = new Date(targetDate + 'T00:00:00');
+    const endOfDay = new Date(targetDate + 'T23:59:59.999');
 
     const records = await Record.findAll({
       include: [
         {
           model: Website,
           as: 'website',
-          where: { domain_id: domainId },
-          include: [
-            {
-              model: Domain,
-              as: 'domain',
-              where: { id: domainId }
-            }
-          ]
-        },
-        {
-          model: Issue,
-          through: { model: IssueRecord },
-          as: 'issues'
+          where: { id: websiteId, domain_id: domainId }
         }
       ],
       where: {
@@ -56,6 +55,7 @@ const getDailyIssues = async (req, res) => {
           through: { model: IssueRecord },
           as: 'records',
           where: {
+            website_id: websiteId,
             createdAt: {
               [Op.between]: [startOfDay, endOfDay]
             }
@@ -64,7 +64,7 @@ const getDailyIssues = async (req, res) => {
             {
               model: Website,
               as: 'website',
-              where: { domain_id: domainId }
+              where: { id: websiteId, domain_id: domainId }
             }
           ]
         }
@@ -73,22 +73,18 @@ const getDailyIssues = async (req, res) => {
     });
 
     const aggregatedIssues = issues.map(issue => {
-      const issueRecords = issue.records.filter(record => 
-        record.Website.domain_id === parseInt(domainId)
-      );
-      
       return {
         id: issue.id,
         issue_id: issue.issue_id,
         title: issue.title,
         description: issue.description,
         category: issue.category,
-        affected_urls: issueRecords.map(record => ({
+        affected_urls: issue.records.map(record => ({
           website_id: record.website_id,
-          path: record.Website.path,
+          path: record.website.path,
           record_id: record.id
         })),
-        total_affected: issueRecords.length
+        total_affected: issue.records.length
       };
     });
 
@@ -97,7 +93,12 @@ const getDailyIssues = async (req, res) => {
       accessibility: records[0].accessibility_score,
       best_practices: records[0].best_practices_score,
       seo: records[0].seo_score,
-      pwa: records[0].pwa_score
+      pwa: records[0].pwa_score,
+      first_contentful_paint: records[0].first_contentful_paint,
+      largest_contentful_paint: records[0].largest_contentful_paint,
+      total_blocking_time: records[0].total_blocking_time,
+      cumulative_layout_shift: records[0].cumulative_layout_shift,
+      speed_index: records[0].speed_index
     } : null;
 
     res.json({
@@ -107,6 +108,10 @@ const getDailyIssues = async (req, res) => {
         domain: {
           id: domain.id,
           url: domain.url
+        },
+        website: {
+          id: website.id,
+          path: website.path
         },
         performance_scores: performanceScores,
         issues: aggregatedIssues,
@@ -125,7 +130,7 @@ const getDailyIssues = async (req, res) => {
 
 const getCalendarData = async (req, res) => {
   try {
-    const { domainId, year, month } = req.params;
+    const { domainId, websiteId, year, month } = req.params;
     
     const domain = await Domain.findOne({
       where: { id: domainId, user_id: req.user.id }
@@ -138,6 +143,17 @@ const getCalendarData = async (req, res) => {
       });
     }
 
+    const website = await Website.findOne({
+      where: { id: websiteId, domain_id: domainId }
+    });
+
+    if (!website) {
+      return res.status(404).json({
+        success: false,
+        message: 'Website not found'
+      });
+    }
+
     const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
     const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59, 999);
 
@@ -146,7 +162,7 @@ const getCalendarData = async (req, res) => {
         {
           model: Website,
           as: 'website',
-          where: { domain_id: domainId }
+          where: { id: websiteId, domain_id: domainId }
         }
       ],
       where: {
@@ -166,9 +182,10 @@ const getCalendarData = async (req, res) => {
       
       const dayRecords = records.filter(record => {
         const recordDate = new Date(record.createdAt);
-        return recordDate.getDate() === day && 
-               recordDate.getMonth() === parseInt(month) - 1 && 
-               recordDate.getFullYear() === parseInt(year);
+        const recordLocalDate = new Date(recordDate.getTime() - (recordDate.getTimezoneOffset() * 60000));
+        return recordLocalDate.getDate() === day && 
+               recordLocalDate.getMonth() === parseInt(month) - 1 && 
+               recordLocalDate.getFullYear() === parseInt(year);
       });
 
       if (dayRecords.length > 0) {
@@ -199,6 +216,10 @@ const getCalendarData = async (req, res) => {
           id: domain.id,
           url: domain.url
         },
+        website: {
+          id: website.id,
+          path: website.path
+        },
         daily_scores: dailyScores,
         total_days_with_data: Object.keys(dailyScores).length
       }
@@ -214,7 +235,7 @@ const getCalendarData = async (req, res) => {
 
 const getOldestDate = async (req, res) => {
   try {
-    const { domainId } = req.params;
+    const { domainId, websiteId } = req.params;
     
     const domain = await Domain.findOne({
       where: { id: domainId, user_id: req.user.id }
@@ -227,12 +248,23 @@ const getOldestDate = async (req, res) => {
       });
     }
 
+    const website = await Website.findOne({
+      where: { id: websiteId, domain_id: domainId }
+    });
+
+    if (!website) {
+      return res.status(404).json({
+        success: false,
+        message: 'Website not found'
+      });
+    }
+
     const oldestRecord = await Record.findOne({
       include: [
         {
           model: Website,
           as: 'website',
-          where: { domain_id: domainId }
+          where: { id: websiteId, domain_id: domainId }
         }
       ],
       order: [['createdAt', 'ASC']]

@@ -7,6 +7,7 @@ import { DomainForm } from '@/components/DomainForm';
 import { UrlList } from '@/components/UrlList';
 import { UrlForm } from '@/components/UrlForm';
 import { PerformanceCalendar } from '@/components/PerformanceCalendar';
+import { ScoresBreakdown } from '@/components/ScoresBreakdown';
 import { FormContainer } from '@/components/FormContainer';
 import './Dashboard.css';
 
@@ -16,10 +17,12 @@ export function Dashboard() {
 	const { user } = useAuth();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [selectedDomainId, setSelectedDomainId] = useState<number | null>(null);
+	const [selectedWebsiteId, setSelectedWebsiteId] = useState<number | null>(null);
 	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 	const [formState, setFormState] = useState<FormState>('none');
 
 	const domainIdFromUrl = searchParams.get('domain');
+	const websiteIdFromUrl = searchParams.get('website');
 	const dateFromUrl = searchParams.get('date');
 
 	useEffect(() => {
@@ -29,19 +32,37 @@ export function Dashboard() {
 				setSelectedDomainId(domainId);
 			}
 		}
+		if (websiteIdFromUrl) {
+			const websiteId = parseInt(websiteIdFromUrl);
+			if (!isNaN(websiteId)) {
+				setSelectedWebsiteId(websiteId);
+			}
+		} else {
+			setSelectedWebsiteId(null);
+		}
 		if (dateFromUrl) {
 			setSelectedDate(dateFromUrl);
 		}
-	}, [domainIdFromUrl, dateFromUrl]);
+	}, [domainIdFromUrl, websiteIdFromUrl, dateFromUrl]);
 
 	const handleDomainChange = (domainId: number) => {
 		setSelectedDomainId(domainId);
-		setSearchParams({ domain: domainId.toString() });
+		setSelectedWebsiteId(null);
+		const today = new Date().toLocaleDateString('en-CA');
+		setSelectedDate(today);
+		const params: Record<string, string> = {
+			domain: domainId.toString(),
+			date: today
+		};
+		setSearchParams(params);
 	};
 
 	const handleDateSelect = (date: string) => {
 		setSelectedDate(date);
-		const params: Record<string, string> = { domain: selectedDomainId!.toString() };
+		const params: Record<string, string> = {
+			domain: selectedDomainId!.toString(),
+			website: selectedWebsiteId!.toString()
+		};
 		if (date) {
 			params.date = date;
 		}
@@ -63,6 +84,18 @@ export function Dashboard() {
 
 	const handleAddUrlClick = () => {
 		setFormState('url');
+	};
+
+	const handleWebsiteSelect = (websiteId: number) => {
+		setSelectedWebsiteId(websiteId);
+		const params: Record<string, string> = {
+			domain: selectedDomainId!.toString(),
+			website: websiteId.toString()
+		};
+		if (selectedDate) {
+			params.date = selectedDate;
+		}
+		setSearchParams(params);
 	};
 
 	const handleUrlCreated = () => {
@@ -95,7 +128,13 @@ export function Dashboard() {
 				return (
 					<section style="display: flex;">
 						<section style="margin-right: 24px; width: 300px;">
-							<UrlList domainId={selectedDomainId} onAddUrl={handleAddUrlClick} />
+							<UrlList
+								key={selectedDomainId}
+								domainId={selectedDomainId}
+								selectedWebsiteId={selectedWebsiteId}
+								onAddUrl={handleAddUrlClick}
+								onWebsiteSelect={handleWebsiteSelect}
+							/>
 						</section>
 						<section style="flex: 1">
 							<section style="display: flex; gap: 12px;">
@@ -103,6 +142,7 @@ export function Dashboard() {
 								<div style="flex: 1;">
 									<PerformanceCalendar
 										domainId={selectedDomainId}
+										websiteId={selectedWebsiteId}
 										selectedDate={selectedDate}
 										onDateSelect={handleDateSelect}
 									/>
@@ -112,7 +152,13 @@ export function Dashboard() {
 							</section>
 							<section>
 								{/* Breakdown with current scores for selected date*/}
-								<div style="margin-top: 24px; height: 284px;"></div>
+								<div style="margin-top: 24px;">
+									<ScoresBreakdown
+										domainId={selectedDomainId}
+										websiteId={selectedWebsiteId}
+										selectedDate={selectedDate}
+									/>
+								</div>
 							</section>
 							<section>
 								{/* All issues for selected date */}

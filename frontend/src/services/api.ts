@@ -96,21 +96,21 @@ class ApiService {
 	};
 
 	public issues = {
-		getDailyIssues: async (domainId: number, date?: string): Promise<any> => {
+		getDailyIssues: async (domainId: number, websiteId: number, date?: string): Promise<any> => {
 			const url = date
-				? `/api/domains/${domainId}/daily/${date}`
-				: `/api/domains/${domainId}/daily`;
+				? `/api/domains/${domainId}/websites/${websiteId}/daily/${date}`
+				: `/api/domains/${domainId}/websites/${websiteId}/daily`;
 			const response: AxiosResponse<any> = await this.api.get(url);
 			return response.data;
 		},
 
-		getCalendarData: async (domainId: number, year: number, month: number): Promise<any> => {
-			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/calendar/${year}/${month}`);
+		getCalendarData: async (domainId: number, websiteId: number, year: number, month: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/calendar/${year}/${month}`);
 			return response.data;
 		},
 
-		getOldestDate: async (domainId: number): Promise<any> => {
-			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/oldest-date`);
+		getOldestDate: async (domainId: number, websiteId: number): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/oldest-date`);
 			return response.data;
 		},
 	};

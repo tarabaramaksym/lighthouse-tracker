@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/compat';
 import { apiService } from '@/services/api';
+import { useDataCache } from '@/hooks/useDataCache';
 import './PerformanceCalendar.css';
 
 interface DailyScore {
@@ -24,34 +25,47 @@ interface CalendarData {
 
 interface PerformanceCalendarProps {
 	domainId: number | null;
+	websiteId: number | null;
 	selectedDate: string | null;
 	onDateSelect: (date: string) => void;
 }
 
-export function PerformanceCalendar({ domainId, selectedDate, onDateSelect }: PerformanceCalendarProps) {
+export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateSelect }: PerformanceCalendarProps) {
 	const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const cache = useDataCache();
 
 	useEffect(() => {
-		if (domainId) {
+		if (domainId && websiteId) {
 			fetchCalendarData();
 		}
-	}, [domainId, currentMonth]);
+	}, [domainId, websiteId, currentMonth]);
 
 	const fetchCalendarData = async () => {
-		if (!domainId) return;
+		if (!domainId || !websiteId) return;
+
+		const year = currentMonth.getFullYear();
+		const month = currentMonth.getMonth() + 1;
+		const cacheKey = `${domainId}-${websiteId}-calendar-${year}-${month}`;
+
+		// Check cache first
+		const cachedData = cache.get(domainId, websiteId, cacheKey);
+		if (cachedData) {
+			setCalendarData(cachedData);
+			return;
+		}
 
 		try {
 			setIsLoading(true);
 			setError(null);
 
-			const year = currentMonth.getFullYear();
-			const month = currentMonth.getMonth() + 1;
-
-			const response = await apiService.issues.getCalendarData(domainId, year, month);
+			const response = await apiService.issues.getCalendarData(domainId, websiteId, year, month);
 			setCalendarData(response.data);
+
+			// Cache the response
+			cache.set(domainId, websiteId, cacheKey, response.data);
 		} catch (err: any) {
 			setError(err.message || 'Failed to fetch calendar data');
 		} finally {
@@ -112,7 +126,7 @@ export function PerformanceCalendar({ domainId, selectedDate, onDateSelect }: Pe
 		const currentDate = new Date(startDate);
 
 		while (currentDate <= lastDay || currentDate.getDay() !== 0) {
-			const dateKey = currentDate.toISOString().split('T')[0];
+			const dateKey = currentDate.toLocaleDateString('en-CA');
 			const isCurrentMonth = currentDate.getMonth() === month;
 			const dayScore = calendarData.daily_scores[dateKey];
 			const isSelected = selectedDate === dateKey;
@@ -131,7 +145,6 @@ export function PerformanceCalendar({ domainId, selectedDate, onDateSelect }: Pe
 					{isCurrentMonth && dayScore && (
 						<div className={`performance-indicator ${getPerformanceColor(dayScore.overall)}`}>
 							<span className="score-text">{dayScore.overall}</span>
-							<span className="performance-text">{getPerformanceText(dayScore.overall)}</span>
 						</div>
 					)}
 				</div>
@@ -158,11 +171,11 @@ export function PerformanceCalendar({ domainId, selectedDate, onDateSelect }: Pe
 		);
 	};
 
-	if (!domainId) {
+	if (!domainId || !websiteId) {
 		return (
 			<div className="performance-calendar">
 				<div className="calendar-placeholder">
-					Select a domain to view performance calendar
+					Select a domain and website to view performance calendar
 				</div>
 			</div>
 		);

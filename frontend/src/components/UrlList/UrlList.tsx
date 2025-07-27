@@ -13,10 +13,12 @@ interface Url {
 
 interface UrlListProps {
 	domainId: number | null;
+	selectedWebsiteId: number | null;
 	onAddUrl: () => void;
+	onWebsiteSelect: (websiteId: number) => void;
 }
 
-export function UrlList({ domainId, onAddUrl }: UrlListProps) {
+export function UrlList({ domainId, selectedWebsiteId, onAddUrl, onWebsiteSelect }: UrlListProps) {
 	const [urls, setUrls] = useState<Url[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -28,6 +30,12 @@ export function UrlList({ domainId, onAddUrl }: UrlListProps) {
 			setUrls([]);
 		}
 	}, [domainId]);
+
+	useEffect(() => {
+		if (urls.length > 0 && selectedWebsiteId === null) {
+			onWebsiteSelect(urls[0].id);
+		}
+	}, [urls, selectedWebsiteId, onWebsiteSelect]);
 
 	const fetchUrls = async () => {
 		if (!domainId) return;
@@ -105,7 +113,11 @@ export function UrlList({ domainId, onAddUrl }: UrlListProps) {
 					</div>
 				) : (
 					urls.map(url => (
-						<div key={url.id} className="url-item">
+						<div
+							key={url.id}
+							className={`url-item ${selectedWebsiteId === url.id ? 'selected' : ''}`}
+							onClick={() => onWebsiteSelect(url.id)}
+						>
 							<span className="url-path">{url.path}</span>
 							<span className={`url-status url-status-${url.status}`}>
 								{url.status}
