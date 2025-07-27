@@ -8,7 +8,7 @@ export function Dashboard() {
 		<div className="dashboard-container">
 			<header className="dashboard-header">
 				<div className="dashboard-title">
-					<h1>Lighthouse Tracker Dashboard</h1>
+					<h1>Lighthouse Keeper Dashboard</h1>
 					<p>Welcome back, {user?.email}!</p>
 				</div>
 				<button onClick={logout} className="btn btn-secondary">
@@ -20,7 +20,7 @@ export function Dashboard() {
 				<div className="dashboard-card">
 					<h2>Getting Started</h2>
 					<p>
-						Welcome to Lighthouse Tracker! This is your main dashboard where you'll be able to:
+						Welcome to Lighthouse Keeper! This is your main dashboard where you'll be able to:
 					</p>
 					<ul>
 						<li>Add and manage your websites</li>

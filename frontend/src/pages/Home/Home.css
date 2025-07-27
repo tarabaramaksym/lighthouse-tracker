@@ -24,6 +24,14 @@
 	margin: 0;
 	font-size: 24px;
 	font-weight: 700;
+
+	img {
+		width: 32px;
+		height: 32px;
+		position: relative;
+		top: 4px;
+		margin-right: 4px;
+	}
 }
 
 .home-actions {
@@ -64,7 +72,6 @@
 .hero-actions {
 	display: flex;
 	gap: 16px;
-	justify-content: center;
 	flex-wrap: wrap;
 }
 
