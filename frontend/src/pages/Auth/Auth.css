@@ -1,11 +1,12 @@
 .auth-container {
-	display: grid;
+	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 20px;
 	height: fit-content;
 	grid-template-columns: 444px 1fr;
 	height: 531px;
+	position: relative;
 }
 
 .auth-card {
@@ -13,9 +14,11 @@
 	border-radius: 8px 0 0 8px;
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 	padding: 32px;
-	width: 100%;
-	position: relative;
-	height: 100%;
+	position: absolute;
+	z-index: 10;
+	width: fit-content;
+	right: 64px;
+	height: 484px;
 }
 
 .auth-header {
@@ -33,10 +36,17 @@
 
 .lighthouse-gif {
 	border-radius: 0 8px 8px 0;
-	height: 100%;
-	width: 100%;
 	object-fit: cover;
 	object-position: 0;
+	width: 100%;
+
+	img {
+		height: 100%;
+	}
+
+	.lighthouse-effect-container {
+		height: 584px;
+	}
 }
 
 .auth-header h1 {

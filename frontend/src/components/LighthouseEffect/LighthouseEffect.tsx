@@ -8,21 +8,46 @@ interface LighthouseEffectProps {
 
 export function LighthouseEffect({ dayImageUrl, nightImageUrl }: LighthouseEffectProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const textCanvasRef = useRef<HTMLCanvasElement>(null);
 	const dayImageRef = useRef<HTMLImageElement | null>(null);
 	const nightImageRef = useRef<HTMLImageElement | null>(null);
 	const animationRef = useRef<number | null>(null);
+	const textCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
 	useEffect(() => {
+		let textCanvas = textCanvasRef.current;
+		let textCtx: CanvasRenderingContext2D | null = null;
+
+		if (!textCanvas) {
+			textCanvas = document.createElement('canvas');
+			textCanvas.style.position = 'fixed';
+			textCanvas.style.top = '0';
+			textCanvas.style.left = '0';
+			textCanvas.style.pointerEvents = 'none';
+			textCanvas.style.zIndex = '4';
+			document.body.appendChild(textCanvas);
+			textCanvasRef.current = textCanvas;
+
+			const style = document.createElement('style');
+			style.textContent = `
+				.lighthouse-effect-container {
+					z-index: 1;
+				}
+				.lighthouse-effect-container img {
+					z-index: 1;
+				}
+			`;
+			document.head.appendChild(style);
+		}
+
+		textCtx = textCanvas.getContext('2d');
+
 		const canvas = canvasRef.current;
-		const textCanvas = textCanvasRef.current;
 
 		if (!canvas || !textCanvas) {
 			return
 		};
 
 		const ctx = canvas.getContext('2d');
-		const textCtx = textCanvas.getContext('2d');
 
 		if (!ctx || !textCtx) {
 			return
@@ -68,17 +93,23 @@ export function LighthouseEffect({ dayImageUrl, nightImageUrl }: LighthouseEffec
 			const displayAspect = nightRect.width / nightRect.height;
 
 			let drawWidth, drawHeight, drawX, drawY;
+			let sourceX, sourceY, sourceWidth, sourceHeight;
+
+			drawWidth = nightRect.width;
+			drawHeight = nightRect.height;
+			drawX = nightRect.left;
+			drawY = nightRect.top;
 
 			if (imgAspect > displayAspect) {
-				drawWidth = nightRect.width;
-				drawHeight = nightRect.width / imgAspect;
-				drawX = nightRect.left;
-				drawY = nightRect.top + (nightRect.height - drawHeight) / 2;
+				sourceHeight = dayImageRef.current.height;
+				sourceWidth = sourceHeight * displayAspect;
+				sourceX = (dayImageRef.current.width - sourceWidth) / 2;
+				sourceY = 0;
 			} else {
-				drawHeight = nightRect.height;
-				drawWidth = nightRect.height * imgAspect;
-				drawX = nightRect.left + (nightRect.width - drawWidth) / 2;
-				drawY = nightRect.top;
+				sourceWidth = dayImageRef.current.width;
+				sourceHeight = sourceWidth / displayAspect;
+				sourceX = 0;
+				sourceY = (dayImageRef.current.height - sourceHeight) / 2;
 			}
 
 			ctx.save();
@@ -86,11 +117,11 @@ export function LighthouseEffect({ dayImageUrl, nightImageUrl }: LighthouseEffec
 			ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2);
 			ctx.clip();
 
-			ctx.drawImage(dayImageRef.current, drawX, drawY, drawWidth, drawHeight);
+			ctx.drawImage(dayImageRef.current, sourceX, sourceY, sourceWidth, sourceHeight, drawX, drawY, drawWidth, drawHeight);
 
 			ctx.restore();
 
-			textCtx.fillStyle = 'rgba(0, 0, 0, 0)';
+			textCtx.fillStyle = 'rgba(255, 255, 255, 0)';
 			textCtx.beginPath();
 			textCtx.arc(mouseX, mouseY, radius, 0, Math.PI * 2);
 			textCtx.fill();
@@ -112,6 +143,9 @@ export function LighthouseEffect({ dayImageUrl, nightImageUrl }: LighthouseEffec
 			if (animationRef.current) {
 				cancelAnimationFrame(animationRef.current);
 			}
+			if (textCanvasRef.current && textCanvasRef.current.parentNode) {
+				textCanvasRef.current.parentNode.removeChild(textCanvasRef.current);
+			}
 		};
 	}, [dayImageUrl]);
 
@@ -129,18 +163,6 @@ export function LighthouseEffect({ dayImageUrl, nightImageUrl }: LighthouseEffec
 					left: 0,
 					pointerEvents: 'none',
 					zIndex: 1,
-				}}
-			/>
-
-			<canvas
-				ref={textCanvasRef}
-				style={{
-					position: 'fixed',
-					top: 0,
-					left: 0,
-					pointerEvents: 'none',
-					zIndex: 4,
-					mixBlendMode: 'difference',
 				}}
 			/>
 		</>

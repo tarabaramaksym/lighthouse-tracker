@@ -1,16 +1,11 @@
-html:has(.home-container) {
-	color: var(--color-white);
-	background-color: var(--color-black);
-}
-
 .home-header {
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
-	background: rgba(26, 26, 26, 0.95);
+	background: rgba(255, 255, 255, 0.95);
 	backdrop-filter: blur(10px);
-	border-bottom: 1px solid var(--color-dark-border);
+	border-bottom: 1px solid var(--color-border);
 	z-index: 1000;
 	padding: 16px 0;
 }
@@ -25,7 +20,7 @@ html:has(.home-container) {
 }
 
 .home-logo {
-	color: var(--color-dark-text);
+	color: var(--color-text);
 	margin: 0;
 	font-size: 24px;
 	font-weight: 700;
@@ -38,33 +33,6 @@ html:has(.home-container) {
 
 .home-actions .btn {
 	padding: 10px 20px;
-	font-size: 14px;
-	font-weight: 500;
-	border-radius: 8px;
-	transition: all 0.3s ease;
-}
-
-.home-actions .btn-secondary {
-	background: transparent;
-	color: var(--color-dark-text);
-	border: 1px solid var(--color-dark-border);
-}
-
-.home-actions .btn-secondary:hover {
-	background: var(--color-dark-hover);
-	border-color: var(--color-dark-text-secondary);
-}
-
-.home-actions .btn-primary {
-	background: var(--color-secondary-1);
-	color: var(--color-dark-bg);
-	border: 1px solid var(--color-secondary-1);
-}
-
-.home-actions .btn-primary:hover {
-	background: var(--color-primary-1);
-	border-color: var(--color-primary-1);
-	color: var(--color-dark-text);
 }
 
 .home-main {
@@ -80,7 +48,6 @@ html:has(.home-container) {
 }
 
 .hero-section h2 {
-	color: var(--color-dark-text);
 	font-size: 48px;
 	font-weight: 700;
 	margin: 0 0 24px 0;
@@ -88,7 +55,7 @@ html:has(.home-container) {
 }
 
 .hero-section p {
-	color: var(--color-dark-text-secondary);
+	color: var(--color-text-secondary);
 	font-size: 20px;
 	line-height: 1.6;
 	margin: 0 0 40px 0;
@@ -109,28 +76,6 @@ html:has(.home-container) {
 	transition: all 0.3s ease;
 }
 
-.hero-actions .btn-secondary {
-	background: transparent;
-	color: var(--color-dark-text);
-	border: 2px solid var(--color-dark-border);
-}
-
-.hero-actions .btn-secondary:hover {
-	background: var(--color-dark-hover);
-	border-color: var(--color-dark-text-secondary);
-}
-
-.hero-actions .btn-primary {
-	background: var(--color-secondary-1);
-	color: var(--color-dark-bg);
-	border: 2px solid var(--color-secondary-1);
-}
-
-.hero-actions .btn-primary:hover {
-	background: var(--color-primary-1);
-	border-color: var(--color-primary-1);
-	color: var(--color-dark-text);
-}
 
 .features-section {
 	padding: 80px 24px;
@@ -139,7 +84,6 @@ html:has(.home-container) {
 }
 
 .features-section h3 {
-	color: var(--color-dark-text);
 	font-size: 36px;
 	font-weight: 600;
 	text-align: center;
@@ -153,8 +97,8 @@ html:has(.home-container) {
 }
 
 .feature-card {
-	background: var(--color-dark-surface);
-	border: 1px solid var(--color-dark-border);
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-2);
 	border-radius: 16px;
 	padding: 32px;
 	text-align: center;
@@ -162,20 +106,19 @@ html:has(.home-container) {
 }
 
 .feature-card:hover {
-	background: var(--color-dark-surface-2);
-	border-color: var(--color-dark-text-secondary);
+	background: var(--color-gray-1);
+	border-color: var(--color-gray-3);
 	transform: translateY(-4px);
 }
 
 .feature-card h4 {
-	color: var(--color-dark-text);
 	font-size: 24px;
 	font-weight: 600;
 	margin: 0 0 16px 0;
 }
 
 .feature-card p {
-	color: var(--color-dark-text-secondary);
+	color: var(--color-text-secondary);
 	font-size: 16px;
 	line-height: 1.6;
 	margin: 0;

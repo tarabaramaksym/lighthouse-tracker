@@ -2,7 +2,10 @@ import { useState, useEffect } from 'preact/hooks';
 import { useSearchParams } from 'react-router-dom';
 import Login from '@/components/Login/Login';
 import SignUp from '@/components/SignUp/SignUp';
-import lighthouseGif from '@/assets/lighthouse.gif';
+import { LighthouseEffect } from '@/components/LighthouseEffect';
+import dayPng from '@/assets/day.png';
+import nightPng from '@/assets/night.png';
+
 import './Auth.css';
 
 export function Auth() {
@@ -42,7 +45,9 @@ export function Auth() {
 					{isLogin ? <Login /> : <SignUp />}
 				</div>
 			</div>
-			<img src={lighthouseGif} alt="Lighthouse animation" className="lighthouse-gif" />
+			<div className="lighthouse-gif">
+				<LighthouseEffect dayImageUrl={dayPng} nightImageUrl={nightPng} />
+			</div>
 		</div>
 	);
 } 
