@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/compat';
 import { apiService } from '@/services/api';
+import { IssuesList } from '@/components/IssuesList';
 import './ScoresBreakdown.css';
 
 interface DailyData {
@@ -172,6 +173,12 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 					<div className="score-text">{text}</div>
 				</div>
 				{selectedTab === 'performance' && renderPerformanceMetrics()}
+				<IssuesList
+					issues={data.issues || []}
+					category={selectedTab}
+					isLoading={isLoading}
+					error={error}
+				/>
 			</div>
 		);
 	};
@@ -230,6 +237,11 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 							{data?.performance_scores && hasScore(tab.key) && (
 								<span className={`tab-score ${getScoreColor(data.performance_scores[getScoreKey(tab.key)])}`}>
 									{data.performance_scores[getScoreKey(tab.key)]}
+								</span>
+							)}
+							{data?.issues && (
+								<span className="tab-issues-count">
+									({data.issues.filter((issue: any) => issue.category === tab.key).length})
 								</span>
 							)}
 						</button>

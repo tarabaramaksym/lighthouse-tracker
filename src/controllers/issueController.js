@@ -52,7 +52,10 @@ const getDailyIssues = async (req, res) => {
       include: [
         {
           model: Record,
-          through: { model: IssueRecord },
+          through: { 
+            model: IssueRecord,
+            attributes: ['severity', 'savings_time', 'savings_bytes']
+          },
           as: 'records',
           where: {
             website_id: websiteId,
@@ -73,6 +76,7 @@ const getDailyIssues = async (req, res) => {
     });
 
     const aggregatedIssues = issues.map(issue => {
+      const issueRecord = issue.records[0];
       return {
         id: issue.id,
         issue_id: issue.issue_id,
@@ -84,7 +88,10 @@ const getDailyIssues = async (req, res) => {
           path: record.website.path,
           record_id: record.id
         })),
-        total_affected: issue.records.length
+        total_affected: issue.records.length,
+        severity: issueRecord?.IssueRecord?.severity || 'medium',
+        savings_time: issueRecord?.IssueRecord?.savings_time || null,
+        savings_bytes: issueRecord?.IssueRecord?.savings_bytes || null
       };
     });
 

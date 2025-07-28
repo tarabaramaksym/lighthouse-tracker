@@ -74,6 +74,12 @@
 	color: #dc2626;
 }
 
+.tab-issues-count {
+	font-size: 12px;
+	color: var(--color-gray-3);
+	font-weight: 500;
+}
+
 .tab-content-wrapper {
 	flex: 1;
 	padding: 24px;
