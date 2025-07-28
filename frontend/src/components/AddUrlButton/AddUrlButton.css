@@ -15,8 +15,7 @@
 
 .add-url-button:hover:not(:disabled) {
 	border-color: var(--color-primary-1);
-	color: var(--color-primary-1);
-	background-color: var(--color-primary-light-1);
+	background-color: var(--color-gray-1);
 }
 
 .add-url-button:disabled {

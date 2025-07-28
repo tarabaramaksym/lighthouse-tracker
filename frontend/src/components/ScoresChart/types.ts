@@ -14,6 +14,7 @@ export interface ScoresChartProps {
 	selectedMetrics: string[];
 	height?: number;
 	cache?: any;
+	isMobile: boolean;
 }
 
 export type MetricType = 'performance' | 'accessibility' | 'best_practices' | 'seo' | 'pwa';

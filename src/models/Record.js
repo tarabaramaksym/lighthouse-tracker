@@ -15,6 +15,11 @@ module.exports = (sequelize) => {
         key: 'id'
       }
     },
+    is_mobile: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     performance_score: {
       type: DataTypes.INTEGER,
       allowNull: false,

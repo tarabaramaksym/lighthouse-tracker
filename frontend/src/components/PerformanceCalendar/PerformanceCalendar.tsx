@@ -26,9 +26,10 @@ interface PerformanceCalendarProps {
 	websiteId: number | null;
 	selectedDate: string | null;
 	onDateSelect: (date: string) => void;
-	data?: any;
-	isLoading?: boolean;
-	error?: string | null;
+	data: any;
+	isLoading: boolean;
+	error: string | null;
+	isMobile: boolean;
 }
 
 export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateSelect, data, isLoading, error }: PerformanceCalendarProps) {

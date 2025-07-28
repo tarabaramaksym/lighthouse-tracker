@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const getDailyIssues = async (req, res) => {
   try {
     const { domainId, websiteId, date } = req.params;
+    const isMobile = req.query.isMobile === 'true';
     
     const targetDate = date || new Date().toISOString().split('T')[0];
 
@@ -43,7 +44,8 @@ const getDailyIssues = async (req, res) => {
       where: {
         createdAt: {
           [Op.between]: [startOfDay, endOfDay]
-        }
+        },
+        is_mobile: isMobile
       },
       order: [['createdAt', 'DESC']]
     });
@@ -59,6 +61,7 @@ const getDailyIssues = async (req, res) => {
           as: 'records',
           where: {
             website_id: websiteId,
+            is_mobile: isMobile,
             createdAt: {
               [Op.between]: [startOfDay, endOfDay]
             }
@@ -138,6 +141,7 @@ const getDailyIssues = async (req, res) => {
 const getCalendarData = async (req, res) => {
   try {
     const { domainId, websiteId, year, month } = req.params;
+    const isMobile = req.query.isMobile === 'true';
     
     const domain = await Domain.findOne({
       where: { id: domainId, user_id: req.user.id }
@@ -175,7 +179,8 @@ const getCalendarData = async (req, res) => {
       where: {
         createdAt: {
           [Op.between]: [startDate, endDate]
-        }
+        },
+        is_mobile: isMobile
       },
       order: [['createdAt', 'ASC']]
     });
@@ -243,6 +248,7 @@ const getCalendarData = async (req, res) => {
 const getOldestDate = async (req, res) => {
   try {
     const { domainId, websiteId } = req.params;
+    const isMobile = req.query.isMobile === 'true';
     
     const domain = await Domain.findOne({
       where: { id: domainId, user_id: req.user.id }
@@ -274,6 +280,9 @@ const getOldestDate = async (req, res) => {
           where: { id: websiteId, domain_id: domainId }
         }
       ],
+      where: {
+        is_mobile: isMobile
+      },
       order: [['createdAt', 'ASC']]
     });
 
@@ -308,6 +317,7 @@ const getOldestDate = async (req, res) => {
 const getChartData = async (req, res) => {
   try {
     const { domainId, websiteId, days } = req.params;
+    const isMobile = req.query.isMobile === 'true';
     
     const domain = await Domain.findOne({
       where: { id: domainId, user_id: req.user.id }
@@ -345,7 +355,8 @@ const getChartData = async (req, res) => {
       where: {
         createdAt: {
           [Op.gte]: daysAgo
-        }
+        },
+        is_mobile: isMobile
       },
       order: [['createdAt', 'ASC']],
       attributes: [

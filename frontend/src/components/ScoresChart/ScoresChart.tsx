@@ -33,7 +33,7 @@ const METRIC_CONFIGS: MetricConfig[] = [
 	{ key: 'pwa', label: 'PWA', color: '#607D8B' }
 ];
 
-export function ScoresChart({ domainId, websiteId, dateRange, selectedMetrics, height = 300, cache }: ScoresChartProps) {
+export function ScoresChart({ domainId, websiteId, dateRange, selectedMetrics, height = 300, cache, isMobile }: ScoresChartProps) {
 	const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export function ScoresChart({ domainId, websiteId, dateRange, selectedMetrics, h
 		} else {
 			setChartData([]);
 		}
-	}, [domainId, websiteId, dateRange]);
+	}, [domainId, websiteId, dateRange, isMobile]);
 
 	const fetchChartData = async () => {
 		if (!domainId || !websiteId) return;
@@ -52,7 +52,7 @@ export function ScoresChart({ domainId, websiteId, dateRange, selectedMetrics, h
 		const days = parseInt(dateRange.replace('d', ''));
 
 		// Check cache first
-		const cacheKey = `${domainId}-${websiteId}-chart-${dateRange}`;
+		const cacheKey = `${domainId}-${websiteId}-chart-${dateRange}-${isMobile}`;
 		const cachedData = cache.get(domainId, websiteId, cacheKey);
 		if (cachedData) {
 			setChartData(cachedData);
@@ -63,7 +63,7 @@ export function ScoresChart({ domainId, websiteId, dateRange, selectedMetrics, h
 			setIsLoading(true);
 			setError(null);
 
-			const response = await apiService.issues.getChartData(domainId, websiteId, days);
+			const response = await apiService.issues.getChartData(domainId, websiteId, days, isMobile);
 			setChartData(response.data);
 			cache.set(domainId, websiteId, cacheKey, response.data);
 		} catch (err: any) {

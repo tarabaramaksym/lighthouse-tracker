@@ -37,6 +37,7 @@ interface ScoresBreakdownProps {
 	data: any;
 	isLoading: boolean;
 	error: string | null;
+	isMobile: boolean;
 }
 
 type TabType = 'performance' | 'accessibility' | 'best-practices' | 'seo' | 'pwa';

@@ -96,26 +96,34 @@ class ApiService {
 	};
 
 	public issues = {
-		getDailyIssues: async (domainId: number, websiteId: number, date?: string): Promise<any> => {
+		getDailyIssues: async (domainId: number, websiteId: number, date?: string, isMobile: boolean = false): Promise<any> => {
 			const url = date
 				? `/api/domains/${domainId}/websites/${websiteId}/daily/${date}`
 				: `/api/domains/${domainId}/websites/${websiteId}/daily`;
-			const response: AxiosResponse<any> = await this.api.get(url);
+			const response: AxiosResponse<any> = await this.api.get(url, {
+				params: { isMobile }
+			});
 			return response.data;
 		},
 
-		getCalendarData: async (domainId: number, websiteId: number, year: number, month: number): Promise<any> => {
-			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/calendar/${year}/${month}`);
+		getCalendarData: async (domainId: number, websiteId: number, year: number, month: number, isMobile: boolean = false): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/calendar/${year}/${month}`, {
+				params: { isMobile }
+			});
 			return response.data;
 		},
 
-		getOldestDate: async (domainId: number, websiteId: number): Promise<any> => {
-			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/oldest-date`);
+		getOldestDate: async (domainId: number, websiteId: number, isMobile: boolean = false): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/oldest-date`, {
+				params: { isMobile }
+			});
 			return response.data;
 		},
 
-		getChartData: async (domainId: number, websiteId: number, days: number): Promise<any> => {
-			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/chart/${days}`);
+		getChartData: async (domainId: number, websiteId: number, days: number, isMobile: boolean = false): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.get(`/api/domains/${domainId}/websites/${websiteId}/chart/${days}`, {
+				params: { isMobile }
+			});
 			return response.data;
 		},
 	};

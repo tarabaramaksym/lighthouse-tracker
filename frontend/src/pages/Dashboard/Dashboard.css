@@ -77,3 +77,34 @@
 	color: white;
 	border-color: var(--color-primary-1);
 }
+
+.mobile-toggle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-right: 12px;
+}
+
+.toggle-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border: 1px solid var(--color-gray-2);
+	background: white;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 20px;
+	transition: all 0.2s ease;
+}
+
+.toggle-button:hover {
+	background: var(--color-gray-1);
+}
+
+.toggle-button.active {
+	background: var(--color-primary-1);
+	color: var(--color-white);
+	border-color: var(--color-primary-1);
+}

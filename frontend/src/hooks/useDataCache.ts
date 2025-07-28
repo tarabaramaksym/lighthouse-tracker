@@ -14,12 +14,12 @@ interface CacheEntry {
 export function useDataCache() {
 	const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
 
-	const generateKey = (domainId: number, websiteId: number, date: string): string => {
-		return `${domainId}-${websiteId}-${date}`;
+	const generateKey = (domainId: number, websiteId: number, date: string, isMobile: boolean = false): string => {
+		return `${domainId}-${websiteId}-${date}-${isMobile}`;
 	};
 
-	const get = (domainId: number, websiteId: number, date: string): any | null => {
-		const key = generateKey(domainId, websiteId, date);
+	const get = (domainId: number, websiteId: number, date: string, isMobile: boolean = false): any | null => {
+		const key = generateKey(domainId, websiteId, date, isMobile);
 		const entry = cacheRef.current.get(key);
 
 		if (!entry) {
@@ -39,8 +39,8 @@ export function useDataCache() {
 		return entry.data;
 	};
 
-	const set = (domainId: number, websiteId: number, date: string, data: any): void => {
-		const key = generateKey(domainId, websiteId, date);
+	const set = (domainId: number, websiteId: number, date: string, data: any, isMobile: boolean = false): void => {
+		const key = generateKey(domainId, websiteId, date, isMobile);
 		cacheRef.current.set(key, {
 			data,
 			timestamp: Date.now()
@@ -51,8 +51,8 @@ export function useDataCache() {
 		cacheRef.current.clear();
 	};
 
-	const has = (domainId: number, websiteId: number, date: string): boolean => {
-		const key = generateKey(domainId, websiteId, date);
+	const has = (domainId: number, websiteId: number, date: string, isMobile: boolean = false): boolean => {
+		const key = generateKey(domainId, websiteId, date, isMobile);
 		return cacheRef.current.has(key);
 	};
 

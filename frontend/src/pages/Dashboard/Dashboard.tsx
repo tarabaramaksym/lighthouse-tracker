@@ -23,6 +23,7 @@ export function Dashboard() {
 	const [selectedDomainId, setSelectedDomainId] = useState<number | null>(null);
 	const [selectedWebsiteId, setSelectedWebsiteId] = useState<number | null>(null);
 	const [selectedDate, setSelectedDate] = useState<string | null>(null);
+	const [isMobile, setIsMobile] = useState<boolean>(false);
 	const [formState, setFormState] = useState<FormState>('none');
 	const [viewState, setViewState] = useState<ViewState>('main');
 	const [chartDateRange, setChartDateRange] = useState<'7d' | '14d' | '30d'>('7d');
@@ -65,7 +66,7 @@ export function Dashboard() {
 		} else {
 			setDailyData(null);
 		}
-	}, [selectedDomainId, selectedWebsiteId, selectedDate]);
+	}, [selectedDomainId, selectedWebsiteId, selectedDate, isMobile]);
 
 	useEffect(() => {
 		if (selectedDomainId && selectedWebsiteId) {
@@ -73,13 +74,13 @@ export function Dashboard() {
 		} else {
 			setCalendarData(null);
 		}
-	}, [selectedDomainId, selectedWebsiteId]);
+	}, [selectedDomainId, selectedWebsiteId, isMobile]);
 
 	const fetchDailyData = async () => {
 		if (!selectedDomainId || !selectedWebsiteId || !selectedDate) return;
 
 		// Check cache first
-		const cachedData = cache.get(selectedDomainId, selectedWebsiteId, selectedDate);
+		const cachedData = cache.get(selectedDomainId, selectedWebsiteId, selectedDate, isMobile);
 		if (cachedData) {
 			setDailyData(cachedData);
 			return;
@@ -88,11 +89,11 @@ export function Dashboard() {
 		try {
 			setIsLoadingDaily(true);
 			setDailyError(null);
-			const response = await apiService.issues.getDailyIssues(selectedDomainId, selectedWebsiteId, selectedDate);
+			const response = await apiService.issues.getDailyIssues(selectedDomainId, selectedWebsiteId, selectedDate, isMobile);
 			setDailyData(response.data);
 
 			// Cache the response
-			cache.set(selectedDomainId, selectedWebsiteId, selectedDate, response.data);
+			cache.set(selectedDomainId, selectedWebsiteId, selectedDate, response.data, isMobile);
 		} catch (err: any) {
 			setDailyError(err.message || 'Failed to fetch daily data');
 		} finally {
@@ -106,7 +107,7 @@ export function Dashboard() {
 		const currentDate = new Date();
 		const year = currentDate.getFullYear();
 		const month = currentDate.getMonth() + 1;
-		const cacheKey = `${selectedDomainId}-${selectedWebsiteId}-calendar-${year}-${month}`;
+		const cacheKey = `${selectedDomainId}-${selectedWebsiteId}-calendar-${year}-${month}-${isMobile}`;
 
 		// Check cache first
 		const cachedData = cache.get(selectedDomainId, selectedWebsiteId, cacheKey);
@@ -118,7 +119,7 @@ export function Dashboard() {
 		try {
 			setIsLoadingCalendar(true);
 			setCalendarError(null);
-			const response = await apiService.issues.getCalendarData(selectedDomainId, selectedWebsiteId, year, month);
+			const response = await apiService.issues.getCalendarData(selectedDomainId, selectedWebsiteId, year, month, isMobile);
 			setCalendarData(response.data);
 
 			// Cache the response
@@ -210,6 +211,10 @@ export function Dashboard() {
 		setViewState(view);
 	};
 
+	const handleMobileToggle = () => {
+		setIsMobile(!isMobile);
+	};
+
 	const renderMainContent = () => {
 		switch (formState) {
 			case 'domain':
@@ -269,6 +274,7 @@ export function Dashboard() {
 												data={calendarData}
 												isLoading={isLoadingCalendar}
 												error={calendarError}
+												isMobile={isMobile}
 											/>
 										</div>
 									</section>
@@ -282,6 +288,7 @@ export function Dashboard() {
 												data={dailyData}
 												isLoading={isLoadingDaily}
 												error={dailyError}
+												isMobile={isMobile}
 											/>
 										</div>
 									</section>
@@ -303,6 +310,7 @@ export function Dashboard() {
 											selectedMetrics={selectedChartMetrics}
 											height={600}
 											cache={cache}
+											isMobile={isMobile}
 										/>
 									</div>
 								</section>
@@ -327,8 +335,22 @@ export function Dashboard() {
 					</section>
 					<section style="display: flex;">
 						{/* Settings & Alerts buttons*/}
-						<div style="margin-right: 12px; width: 44px; height: 44px;"></div>
-						<div style="width: 44px; height: 44px;"></div>
+						<div className="mobile-toggle">
+							<button
+								className={`toggle-button ${!isMobile ? 'active' : ''}`}
+								onClick={() => setIsMobile(false)}
+								aria-label="Desktop View"
+							>
+								💻
+							</button>
+							<button
+								className={`toggle-button ${isMobile ? 'active' : ''}`}
+								onClick={() => setIsMobile(true)}
+								aria-label="Mobile View"
+							>
+								📱
+							</button>
+						</div>
 					</section>
 				</section>
 				{/* Main content area */}
