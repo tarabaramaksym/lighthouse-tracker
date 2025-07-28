@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'preact/compat';
+import { Placeholder } from '@/components/Placeholder';
 import './PerformanceCalendar.css';
 
 interface DailyScore {
@@ -139,9 +140,16 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 	if (!domainId || !websiteId) {
 		return (
 			<div className="performance-calendar">
-				<div className="calendar-placeholder">
-					Select a domain and website to view performance calendar
-				</div>
+				<Placeholder
+					desktopHeight="480px"
+					desktopWidth="478px"
+					mobileHeight="480px"
+					mobileWidth="478px"
+				>
+					<div className="selection-message">
+						Select a domain and website to view performance calendar
+					</div>
+				</Placeholder>
 			</div>
 		);
 	}
@@ -149,9 +157,12 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 	if (isLoading) {
 		return (
 			<div className="performance-calendar">
-				<div className="calendar-placeholder">
-					Loading calendar data...
-				</div>
+				<Placeholder
+					desktopHeight="480px"
+					desktopWidth="478px"
+					mobileHeight="480px"
+					mobileWidth="478px"
+				/>
 			</div>
 		);
 	}
@@ -159,9 +170,16 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 	if (error) {
 		return (
 			<div className="performance-calendar">
-				<div className="calendar-placeholder error">
-					{error}
-				</div>
+				<Placeholder
+					desktopHeight="480px"
+					desktopWidth="478px"
+					mobileHeight="480px"
+					mobileWidth="478px"
+				>
+					<div className="error-message">
+						{error}
+					</div>
+				</Placeholder>
 			</div>
 		);
 	}
