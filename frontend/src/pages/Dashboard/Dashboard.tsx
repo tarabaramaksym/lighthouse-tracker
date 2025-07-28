@@ -246,20 +246,38 @@ export function Dashboard() {
 						</section>
 						<section style="flex: 1">
 							<div className="view-tabs">
-								<button
-									className={`view-tab ${viewState === 'main' ? 'active' : ''}`}
-									onClick={() => handleViewChange('main')}
-									aria-label="Main Dashboard View"
-								>
-									📊
-								</button>
-								<button
-									className={`view-tab ${viewState === 'charts' ? 'active' : ''}`}
-									onClick={() => handleViewChange('charts')}
-									aria-label="Charts View"
-								>
-									📈
-								</button>
+								<div className="mobile-toggle">
+									<button
+										className={`view-tab ${viewState === 'main' ? 'active' : ''}`}
+										onClick={() => handleViewChange('main')}
+										aria-label="Main Dashboard View"
+									>
+										📊
+									</button>
+									<button
+										className={`view-tab ${viewState === 'charts' ? 'active' : ''}`}
+										onClick={() => handleViewChange('charts')}
+										aria-label="Charts View"
+									>
+										📈
+									</button>
+								</div>
+								<div className="mobile-toggle">
+									<button
+										className={`toggle-button ${!isMobile ? 'active' : ''}`}
+										onClick={() => setIsMobile(false)}
+										aria-label="Desktop View"
+									>
+										💻
+									</button>
+									<button
+										className={`toggle-button ${isMobile ? 'active' : ''}`}
+										onClick={() => setIsMobile(true)}
+										aria-label="Mobile View"
+									>
+										📱
+									</button>
+								</div>
 							</div>
 							{viewState === 'main' ? (
 								<>
@@ -335,22 +353,6 @@ export function Dashboard() {
 					</section>
 					<section style="display: flex;">
 						{/* Settings & Alerts buttons*/}
-						<div className="mobile-toggle">
-							<button
-								className={`toggle-button ${!isMobile ? 'active' : ''}`}
-								onClick={() => setIsMobile(false)}
-								aria-label="Desktop View"
-							>
-								💻
-							</button>
-							<button
-								className={`toggle-button ${isMobile ? 'active' : ''}`}
-								onClick={() => setIsMobile(true)}
-								aria-label="Mobile View"
-							>
-								📱
-							</button>
-						</div>
 					</section>
 				</section>
 				{/* Main content area */}

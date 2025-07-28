@@ -51,6 +51,8 @@
 	display: flex;
 	gap: 8px;
 	margin-bottom: 16px;
+	justify-content: space-between;
+	width: 100%;
 }
 
 .view-tab {
