@@ -1,4 +1,5 @@
 const { Domain } = require('../models');
+const ScheduleValidator = require('../services/cron/ScheduleValidator');
 
 const getDomains = async (req, res) => {
   try {
@@ -22,7 +23,7 @@ const getDomains = async (req, res) => {
 
 const createDomain = async (req, res) => {
   try {
-    let { url } = req.body;
+    let { url, lighthouse_schedule } = req.body;
 
     if (!url) {
       return res.status(400).json({
@@ -40,6 +41,13 @@ const createDomain = async (req, res) => {
       });
     }
 
+    if (lighthouse_schedule && !ScheduleValidator.isValid15MinuteInterval(lighthouse_schedule)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Lighthouse schedule must be in 15-minute intervals (e.g., 12:15, 22:30)'
+      });
+    }
+
     const existingDomain = await Domain.findOne({
       where: { url, user_id: req.user.id }
     });
@@ -54,7 +62,8 @@ const createDomain = async (req, res) => {
     const domain = await Domain.create({
       url,
       user_id: req.user.id,
-      status: 'active'
+      status: 'active',
+      lighthouse_schedule: lighthouse_schedule ? ScheduleValidator.formatTime(lighthouse_schedule) : null
     });
 
     res.status(201).json({
@@ -101,8 +110,73 @@ const deleteDomain = async (req, res) => {
   }
 };
 
+const updateDomain = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { url, status, lighthouse_schedule } = req.body;
+
+    const domain = await Domain.findOne({
+      where: { id, user_id: req.user.id }
+    });
+
+    if (!domain) {
+      return res.status(404).json({
+        success: false,
+        message: 'Domain not found'
+      });
+    }
+
+    if (lighthouse_schedule && !ScheduleValidator.isValid15MinuteInterval(lighthouse_schedule)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Lighthouse schedule must be in 15-minute intervals (e.g., 12:15, 22:30)'
+      });
+    }
+
+    const updateData = {};
+    if (url !== undefined) updateData.url = url.trim();
+    if (status !== undefined) updateData.status = status;
+    if (lighthouse_schedule !== undefined) {
+      updateData.lighthouse_schedule = lighthouse_schedule ? ScheduleValidator.formatTime(lighthouse_schedule) : null;
+    }
+
+    await domain.update(updateData);
+
+    res.json({
+      success: true,
+      domain,
+      message: 'Domain updated successfully'
+    });
+  } catch (error) {
+    console.error('Update domain error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update domain'
+    });
+  }
+};
+
+const getValidScheduleTimes = async (req, res) => {
+  try {
+    const validTimes = ScheduleValidator.getValidTimes();
+    
+    res.json({
+      success: true,
+      validTimes
+    });
+  } catch (error) {
+    console.error('Get valid schedule times error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve valid schedule times'
+    });
+  }
+};
+
 module.exports = {
   getDomains,
   createDomain,
-  deleteDomain
+  updateDomain,
+  deleteDomain,
+  getValidScheduleTimes
 }; 

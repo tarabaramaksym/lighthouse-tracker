@@ -23,6 +23,11 @@ module.exports = (sequelize) => {
       type: DataTypes.ENUM('active', 'inactive'),
       allowNull: false,
       defaultValue: 'active'
+    },
+    lighthouse_schedule: {
+      type: DataTypes.TIME,
+      allowNull: true,
+      comment: 'Time of day to run Lighthouse audits (15-minute intervals only)'
     }
   }, {
     timestamps: true,

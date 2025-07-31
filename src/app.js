@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { sequelize } = require('./models');
 const { generalLimiter } = require('./middleware/rateLimit');
+const CronService = require('./services/cron/CronService');
 
 const app = express();
 
@@ -39,6 +40,18 @@ const initializeDatabase = async () => {
   }
 };
 
-initializeDatabase();
+const initializeCronService = () => {
+  if (process.env.CRON_ENABLED !== 'false') {
+    const cronService = new CronService();
+    cronService.start();
+    console.log('Cron service initialized.');
+  } else {
+    console.log('Cron service disabled via environment variable.');
+  }
+};
+
+initializeDatabase().then(() => {
+  initializeCronService();
+});
 
 module.exports = app; 
