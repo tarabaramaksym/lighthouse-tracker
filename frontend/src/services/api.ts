@@ -67,8 +67,19 @@ class ApiService {
 			return response.data;
 		},
 
-		createDomain: async (url: string): Promise<any> => {
-			const response: AxiosResponse<any> = await this.api.post('/api/domains', { url });
+		createDomain: async (url: string, lighthouseSchedule?: string): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.post('/api/domains', {
+				url,
+				lighthouse_schedule: lighthouseSchedule
+			});
+			return response.data;
+		},
+
+		updateDomain: async (id: number, url: string, lighthouseSchedule?: string): Promise<any> => {
+			const response: AxiosResponse<any> = await this.api.put(`/api/domains/${id}`, {
+				url,
+				lighthouse_schedule: lighthouseSchedule
+			});
 			return response.data;
 		},
 

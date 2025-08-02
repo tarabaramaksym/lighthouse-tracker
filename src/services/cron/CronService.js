@@ -16,7 +16,7 @@ class CronService {
 
     console.log('[CronService] Starting cron service...');
     
-    const cronJob = cron.schedule('*/1 * * * *', async () => {
+    const cronJob = cron.schedule('*/15 * * * *', async () => {
       await this.executeScheduledAudits();
     }, {
       scheduled: true,

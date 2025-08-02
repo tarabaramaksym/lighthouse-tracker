@@ -78,7 +78,7 @@ export function Home() {
 					</div>
 				</section>
 
-				<section className="pricing-section">
+				<section className="pricing-section" style="display:none;">
 					<h3>Choose Your Plan</h3>
 					<div className="pricing-toggle">
 						<span className={!isYearly ? 'active' : ''}>Monthly</span>

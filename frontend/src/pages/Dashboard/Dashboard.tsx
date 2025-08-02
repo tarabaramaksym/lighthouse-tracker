@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'preact/compat';
 import { useSearchParams } from 'react-router-dom';
 import { DomainDropdown } from '@/components/DomainDropdown';
-import { AddDomainButton } from '@/components/AddDomainButton';
+import { IconButton } from '@/components/IconButton';
 import { DomainForm } from '@/components/DomainForm';
 import { UrlList } from '@/components/UrlList';
 import { UrlForm } from '@/components/UrlForm';
@@ -35,6 +35,8 @@ export function Dashboard() {
 	const [calendarData, setCalendarData] = useState<any>(null);
 	const [isLoadingCalendar, setIsLoadingCalendar] = useState(false);
 	const [calendarError, setCalendarError] = useState<string | null>(null);
+	const [editingDomain, setEditingDomain] = useState<any>(null);
+	const [domains, setDomains] = useState<any[]>([]);
 
 	const domainIdFromUrl = searchParams.get('domain');
 	const websiteIdFromUrl = searchParams.get('website');
@@ -75,6 +77,10 @@ export function Dashboard() {
 			setCalendarData(null);
 		}
 	}, [selectedDomainId, selectedWebsiteId, isMobile]);
+
+	useEffect(() => {
+		fetchDomains();
+	}, []);
 
 	const fetchDailyData = async () => {
 		if (!selectedDomainId || !selectedWebsiteId || !selectedDate) return;
@@ -159,9 +165,29 @@ export function Dashboard() {
 		setFormState('domain');
 	};
 
+	const handleUpdateDomainClick = () => {
+		if (selectedDomainId) {
+			const selectedDomain = domains.find((d: any) => d.id === selectedDomainId);
+			if (selectedDomain) {
+				setEditingDomain(selectedDomain);
+				setFormState('domain');
+			}
+		}
+	};
+
+	const fetchDomains = async () => {
+		try {
+			const response = await apiService.domains.getDomains();
+			setDomains(response.domains || []);
+		} catch (error) {
+			console.error('Failed to fetch domains:', error);
+		}
+	};
+
 	const handleDomainCreated = () => {
 		setFormState('none');
-		window.location.reload();
+		setEditingDomain(null);
+		fetchDomains();
 	};
 
 	const handleCancelDomainForm = () => {
@@ -222,6 +248,8 @@ export function Dashboard() {
 					<DomainForm
 						onDomainCreated={handleDomainCreated}
 						onCancel={handleCancelDomainForm}
+						mode={editingDomain ? 'update' : 'create'}
+						domain={editingDomain}
 					/>
 				);
 			case 'url':
@@ -349,7 +377,18 @@ export function Dashboard() {
 							selectedDomainId={selectedDomainId}
 							onDomainChange={handleDomainChange}
 						/>
-						<AddDomainButton onClick={handleAddDomainClick} />
+						<IconButton onClick={handleUpdateDomainClick}>
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+								<path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+							</svg>
+						</IconButton>
+
+						<IconButton onClick={handleAddDomainClick}>
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+							</svg>
+						</IconButton>
 					</section>
 					<section style="display: flex;">
 						{/* Settings & Alerts buttons*/}
