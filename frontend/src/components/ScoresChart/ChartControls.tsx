@@ -1,4 +1,5 @@
 import type { MetricType } from './types';
+import { Button } from '@/components/Button';
 import './ChartControls.css';
 
 interface ChartControlsProps {
@@ -29,13 +30,13 @@ export function ChartControls({ dateRange, onDateRangeChange, selectedMetrics, o
 				<label className="control-label">Date Range:</label>
 				<div className="date-range-buttons">
 					{DATE_RANGE_OPTIONS.map(option => (
-						<button
+						<Button
 							key={option.value}
 							className={`range-button ${dateRange === option.value ? 'active' : ''}`}
 							onClick={() => onDateRangeChange(option.value)}
 						>
 							{option.label}
-						</button>
+						</Button>
 					))}
 				</div>
 			</div>

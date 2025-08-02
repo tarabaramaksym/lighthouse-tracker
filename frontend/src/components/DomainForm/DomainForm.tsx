@@ -1,6 +1,7 @@
 import { useState } from 'preact/compat';
 import { apiService } from '@/services/api';
 import { FormContainer } from '@/components/FormContainer';
+import { Button } from '@/components/Button';
 import './DomainForm.css';
 
 interface DomainFormProps {
@@ -107,21 +108,21 @@ export function DomainForm({ onDomainCreated, onCancel, mode = 'create', domain 
 					)}
 
 					<div className="form-actions">
-						<button
+						<Button
 							type="button"
 							onClick={handleCancel}
 							disabled={isSubmitting}
 							className="btn btn-secondary"
 						>
 							Cancel
-						</button>
-						<button
+						</Button>
+						<Button
 							type="submit"
 							disabled={isSubmitting}
 							className="btn btn-primary"
 						>
 							{isSubmitting ? (mode === 'update' ? 'Updating...' : 'Creating...') : (mode === 'update' ? 'Update Domain' : 'Create Domain')}
-						</button>
+						</Button>
 					</div>
 				</form>
 			</div>

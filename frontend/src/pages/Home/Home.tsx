@@ -7,6 +7,7 @@ import day from '@/assets/day.png';
 import evening from '@/assets/evening.png';
 import night from '@/assets/night.png';
 import { LighthouseEffect } from '@/components/LighthouseEffect';
+import { Button } from '@/components/Button';
 import './Home.css';
 
 export function Home() {
@@ -36,12 +37,12 @@ export function Home() {
 							with automated Lighthouse audits. Get detailed insights and track improvements over time.
 						</p>
 						<div className="hero-actions">
-							<button onClick={handleSignUp} className="btn btn-primary">
+							<Button onClick={handleSignUp} className="btn btn-primary">
 								Get Started Free
-							</button>
-							<button onClick={handleSignIn} className="btn btn-secondary">
+							</Button>
+							<Button onClick={handleSignIn} className="btn btn-secondary">
 								Sign In
-							</button>
+							</Button>
 						</div>
 					</div>
 					<LighthouseEffect auto radius={100} borderRadius="16px" dayImageUrl={dayPng} nightImageUrl={nightPng} />
@@ -82,12 +83,12 @@ export function Home() {
 					<h3>Choose Your Plan</h3>
 					<div className="pricing-toggle">
 						<span className={!isYearly ? 'active' : ''}>Monthly</span>
-						<button
+						<Button
 							className={`toggle-button ${isYearly ? 'active' : ''}`}
 							onClick={() => setIsYearly(!isYearly)}
 						>
 							<div className="toggle-slider"></div>
-						</button>
+						</Button>
 						<span className={isYearly ? 'active' : ''}>
 							Yearly <span className="discount">Save 50%</span>
 						</span>
@@ -113,9 +114,9 @@ export function Home() {
 									<span>5 URLs per domain</span>
 								</div>
 							</div>
-							<button onClick={handlePricingSignUp} className="btn btn-secondary">
+							<Button onClick={handlePricingSignUp} className="btn btn-secondary">
 								Get Started Free
-							</button>
+							</Button>
 						</div>
 
 						<div className="pricing-card featured" style={{ backgroundImage: `url(${evening})` }}>
@@ -138,9 +139,9 @@ export function Home() {
 									<span>100 URLs per domain</span>
 								</div>
 							</div>
-							<button onClick={handlePricingSignUp} className="btn btn-primary">
+							<Button onClick={handlePricingSignUp} className="btn btn-primary">
 								Start Pro Plan
-							</button>
+							</Button>
 						</div>
 
 						<div className="pricing-card" style={{ backgroundImage: `url(${day})` }}>
@@ -163,9 +164,9 @@ export function Home() {
 									<span>10,000 URLs per domain</span>
 								</div>
 							</div>
-							<button onClick={handlePricingSignUp} className="btn btn-secondary">
+							<Button onClick={handlePricingSignUp} className="btn btn-secondary">
 								Start Pro+ Plan
-							</button>
+							</Button>
 						</div>
 					</div>
 				</section>

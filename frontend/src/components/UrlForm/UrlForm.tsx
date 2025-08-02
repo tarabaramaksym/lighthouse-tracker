@@ -1,6 +1,7 @@
 import { useState } from 'preact/compat';
 import { apiService } from '@/services/api';
 import { FormContainer } from '@/components/FormContainer';
+import { Button } from '@/components/Button';
 import './UrlForm.css';
 
 interface UrlFormProps {
@@ -69,21 +70,21 @@ export function UrlForm({ domainId, onUrlCreated, onCancel }: UrlFormProps) {
 					)}
 
 					<div className="form-actions">
-						<button
+						<Button
 							type="button"
 							onClick={handleCancel}
 							disabled={isSubmitting}
 							className="btn btn-secondary"
 						>
 							Cancel
-						</button>
-						<button
+						</Button>
+						<Button
 							type="submit"
 							disabled={isSubmitting}
 							className="btn btn-primary"
 						>
 							{isSubmitting ? 'Creating...' : 'Create URL'}
-						</button>
+						</Button>
 					</div>
 				</form>
 			</div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/compat';
 import { apiService } from '@/services/api';
 import { IssuesList } from '@/components/IssuesList';
+import { Button } from '@/components/Button';
 import './ScoresBreakdown.css';
 
 interface DailyData {
@@ -228,7 +229,7 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 				{tabs.map(tab => {
 					const isDisabled = !hasScore(tab.key);
 					return (
-						<button
+						<Button
 							key={tab.key}
 							className={`tab-button ${selectedTab === tab.key ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}
 							onClick={() => !isDisabled && setSelectedTab(tab.key)}
@@ -245,7 +246,7 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 									({data.issues.filter((issue: any) => issue.category === tab.key).length})
 								</span>
 							)}
-						</button>
+						</Button>
 					);
 				})}
 			</div>

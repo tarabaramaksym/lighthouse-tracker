@@ -2,6 +2,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import logo from '@/assets/logo.png';
 import './Header.css';
+import { Button } from '@/components/Button';
 
 export function Header() {
 	const navigate = useNavigate();
@@ -41,23 +42,23 @@ export function Header() {
 				<div className="header-actions">
 					{isHomePage && !isAuthenticated && (
 						<>
-							<button onClick={handleSignIn} className="btn btn-secondary">
+							<Button onClick={handleSignIn} className="btn btn-secondary">
 								Sign In
-							</button>
-							<button onClick={handleSignUp} className="btn btn-primary">
+							</Button>
+							<Button onClick={handleSignUp} className="btn btn-primary">
 								Sign Up
-							</button>
+							</Button>
 						</>
 					)}
 					{isHomePage && isAuthenticated && (
-						<button onClick={handleGoToDashboard} className="btn btn-primary">
+						<Button onClick={handleGoToDashboard} className="btn btn-primary">
 							Dashboard
-						</button>
+						</Button>
 					)}
 					{isDashboardPage && (
-						<button onClick={handleLogout} className="btn btn-secondary">
+						<Button onClick={handleLogout} className="btn btn-secondary">
 							Logout
-						</button>
+						</Button>
 					)}
 				</div>
 			</div>

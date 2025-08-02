@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/compat';
 import { Placeholder } from '@/components/Placeholder';
+import { Button } from '@/components/Button';
 import './PerformanceCalendar.css';
 
 interface DailyScore {
@@ -45,12 +46,6 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 		return 'red';
 	};
 
-	const getPerformanceText = (score: number): string => {
-		if (score >= 90) return 'Good';
-		if (score >= 50) return 'Needs Improvement';
-		return 'Poor';
-	};
-
 	const renderCalendarHeader = () => {
 		const monthNames = [
 			'January', 'February', 'March', 'April', 'May', 'June',
@@ -59,21 +54,21 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 
 		return (
 			<div className="calendar-header">
-				<button
+				<Button
 					className="calendar-nav-btn"
 					onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
 				>
 					←
-				</button>
+				</Button>
 				<h3 className="calendar-title">
 					{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
 				</h3>
-				<button
+				<Button
 					className="calendar-nav-btn"
 					onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
 				>
 					→
-				</button>
+				</Button>
 			</div>
 		);
 	};

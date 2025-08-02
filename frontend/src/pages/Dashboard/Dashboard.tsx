@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'preact/compat';
 import { useSearchParams } from 'react-router-dom';
 import { DomainDropdown } from '@/components/DomainDropdown';
-import { IconButton } from '@/components/IconButton';
+import { Button } from '@/components/Button';
 import { DomainForm } from '@/components/DomainForm';
 import { UrlList } from '@/components/UrlList';
 import { UrlForm } from '@/components/UrlForm';
@@ -275,36 +275,20 @@ export function Dashboard() {
 						<section style="flex: 1">
 							<div className="view-tabs">
 								<div className="mobile-toggle">
-									<button
-										className={`view-tab ${viewState === 'main' ? 'active' : ''}`}
-										onClick={() => handleViewChange('main')}
-										aria-label="Main Dashboard View"
-									>
+									<Button title="Main Dashboard View" onClick={() => handleViewChange('main')} className={`view-tab ${viewState === 'main' ? 'active' : ''}`}>
 										📊
-									</button>
-									<button
-										className={`view-tab ${viewState === 'charts' ? 'active' : ''}`}
-										onClick={() => handleViewChange('charts')}
-										aria-label="Charts View"
-									>
+									</Button>
+									<Button title="Charts View" onClick={() => handleViewChange('charts')} className={`view-tab ${viewState === 'charts' ? 'active' : ''}`}>
 										📈
-									</button>
+									</Button>
 								</div>
 								<div className="mobile-toggle">
-									<button
-										className={`toggle-button ${!isMobile ? 'active' : ''}`}
-										onClick={() => setIsMobile(false)}
-										aria-label="Desktop View"
-									>
+									<Button title="Desktop View" onClick={() => setIsMobile(false)} className={`toggle-button ${!isMobile ? 'active' : ''}`}>
 										💻
-									</button>
-									<button
-										className={`toggle-button ${isMobile ? 'active' : ''}`}
-										onClick={() => setIsMobile(true)}
-										aria-label="Mobile View"
-									>
+									</Button>
+									<Button title="Mobile View" onClick={() => setIsMobile(true)} className={`toggle-button ${isMobile ? 'active' : ''}`}>
 										📱
-									</button>
+									</Button>
 								</div>
 							</div>
 							{viewState === 'main' ? (
@@ -377,18 +361,18 @@ export function Dashboard() {
 							selectedDomainId={selectedDomainId}
 							onDomainChange={handleDomainChange}
 						/>
-						<IconButton onClick={handleUpdateDomainClick}>
+						<Button onClick={handleUpdateDomainClick} title="Update domain">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 								<path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 							</svg>
-						</IconButton>
+						</Button>
 
-						<IconButton onClick={handleAddDomainClick}>
+						<Button onClick={handleAddDomainClick} title="Add domain">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 							</svg>
-						</IconButton>
+						</Button>
 					</section>
 					<section style="display: flex;">
 						{/* Settings & Alerts buttons*/}

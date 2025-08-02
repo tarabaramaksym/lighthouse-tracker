@@ -102,3 +102,10 @@
 .error-message {
 	color: var(--color-error);
 }
+
+.add-url-button {
+	gap: 6px;
+	padding: 8px 12px;
+	font-size: 12px;
+	font-weight: 500;
+}

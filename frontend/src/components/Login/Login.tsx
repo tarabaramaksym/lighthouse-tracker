@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks';
 import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/Button';
 
 export function Login() {
 	const { login, error, clearError } = useAuth();
@@ -57,9 +58,9 @@ export function Login() {
 				/>
 			</div>
 
-			<button type="submit" className="btn btn-primary mt-10">
+			<Button type="submit" className="btn btn-primary mt-10">
 				Login
-			</button>
+			</Button>
 		</form>
 	);
 }

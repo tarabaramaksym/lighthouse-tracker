@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import Login from '@/components/Login/Login';
 import SignUp from '@/components/SignUp/SignUp';
 import { LighthouseEffect } from '@/components/LighthouseEffect';
+import { Button } from '@/components/Button';
 import dayPng from '@/assets/day.png';
 import nightPng from '@/assets/night.png';
 
@@ -26,18 +27,18 @@ export function Auth() {
 			<div className="auth-card">
 				<div className="auth-header">
 					<div className="auth-tabs">
-						<button
+						<Button
 							className={`auth-tab ${isLogin ? 'active' : ''}`}
 							onClick={() => setIsLogin(true)}
 						>
 							Login
-						</button>
-						<button
+						</Button>
+						<Button
 							className={`auth-tab ${!isLogin ? 'active' : ''}`}
 							onClick={() => setIsLogin(false)}
 						>
 							Sign Up
-						</button>
+						</Button>
 					</div>
 				</div>
 

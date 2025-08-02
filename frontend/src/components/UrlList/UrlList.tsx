@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'preact/compat';
 import { apiService } from '@/services/api';
-import { AddUrlButton } from '@/components/AddUrlButton';
+import { Button } from '@/components/Button';
 import './UrlList.css';
 
 interface Url {
@@ -103,7 +103,12 @@ export function UrlList({ domainId, selectedWebsiteId, onAddUrl, onWebsiteSelect
 				<h4>URLs</h4>
 				<div className="url-list-actions">
 					<span className="url-count">{urls.length} URLs</span>
-					<AddUrlButton onClick={onAddUrl} disabled={!domainId} />
+					<Button title="Add URL" onClick={onAddUrl} disabled={!domainId} className="add-url-button">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+						</svg>
+						<span>Add URL</span>
+					</Button>
 				</div>
 			</div>
 			<div className="url-list-content">
