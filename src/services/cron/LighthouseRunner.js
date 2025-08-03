@@ -1,5 +1,4 @@
 const { Record, Issue, IssueRecord } = require('../../models');
-const chromeLauncher = require('chrome-launcher');
 const { exec } = require('child_process');
 const { promisify } = require('util');
 const fs = require('fs');
@@ -113,6 +112,8 @@ class LighthouseRunner {
 		try {
 			console.log(`[LighthouseRunner] Launching Chrome for Lighthouse audit (${isMobile ? 'mobile' : 'desktop'})...`);
 
+			const chromeLauncher = await import('chrome-launcher');
+
 			this.chrome = await chromeLauncher.launch({
 				chromeFlags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--headless', '--disable-web-security', '--disable-features=VizDisplayCompositor']
 			});
@@ -188,8 +189,8 @@ class LighthouseRunner {
 				throw new Error('Invalid Lighthouse report structure');
 			}
 
-			this.lastReportJson = reportJson; // Store the report for category mapping
-			this.buildCategoryMappings(); // Build mappings after each run
+			this.lastReportJson = reportJson;
+			this.buildCategoryMappings();
 
 			console.log(`[LighthouseRunner] Lighthouse audit completed successfully (${isMobile ? 'mobile' : 'desktop'})`);
 
