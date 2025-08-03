@@ -156,9 +156,9 @@ export function IssuesList({ issues, category, isLoading, error }: IssuesListPro
 								<div className={`severity-icon ${getSeverityIcon(issue.severity || 'medium')}`}></div>
 								<h5 className="issue-title">{issue.title}</h5>
 							</div>
-							<span className="issue-count">
+							{/* <span className="issue-count">
 								{issue.total_affected} affected
-							</span>
+							</span> */}
 						</div>
 						<div className="issue-description-container">
 							<p className="issue-description">{issue.description}</p>

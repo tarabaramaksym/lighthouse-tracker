@@ -39,5 +39,7 @@
 	--color-status-monitoring-text: #166534;
 	--color-status-ignored-bg: #fef3c7;
 	--color-status-ignored-text: #92400e;
+	--color-status-404-bg: #fef2f2;
+	--color-status-404-text: #dc2626;
 	--color-error: #dc2626;
 }
