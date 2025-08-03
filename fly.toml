@@ -7,6 +7,10 @@ primary_region = "ord"
 [env]
   NODE_ENV = "production"
   PORT = "3000"
+  VITE_API_URL = "https://lighthouse-tracker.fly.dev"
+  CHROME_PATH = "/usr/bin/chromium-browser"
+  CHROME_BIN = "/usr/bin/chromium-browser"
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
 
 [http_service]
   internal_port = 3000

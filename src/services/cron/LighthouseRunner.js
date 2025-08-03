@@ -111,11 +111,26 @@ class LighthouseRunner {
 	async runLighthouse(url, isMobile = false) {
 		try {
 			console.log(`[LighthouseRunner] Launching Chrome for Lighthouse audit (${isMobile ? 'mobile' : 'desktop'})...`);
+			console.log(`[LighthouseRunner] CHROME_PATH: ${process.env.CHROME_PATH || 'not set'}`);
+			console.log(`[LighthouseRunner] CHROME_BIN: ${process.env.CHROME_BIN || 'not set'}`);
 
 			const chromeLauncher = await import('chrome-launcher');
 
 			this.chrome = await chromeLauncher.launch({
-				chromeFlags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--headless', '--disable-web-security', '--disable-features=VizDisplayCompositor']
+				chromeFlags: [
+					'--no-sandbox',
+					'--disable-gpu',
+					'--disable-dev-shm-usage',
+					'--headless',
+					'--disable-web-security',
+					'--disable-features=VizDisplayCompositor',
+					'--disable-setuid-sandbox',
+					'--disable-background-timer-throttling',
+					'--disable-backgrounding-occluded-windows',
+					'--disable-renderer-backgrounding',
+					'--disable-field-trial-config',
+					'--disable-ipc-flooding-protection'
+				]
 			});
 
 			const { default: lighthouse } = await import('lighthouse');
