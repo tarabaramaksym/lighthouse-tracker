@@ -6,7 +6,7 @@ import './UrlList.css';
 interface Url {
 	id: number;
 	path: string;
-	status: 'monitoring' | 'ignored';
+	status: 'monitoring' | 'ignored' | '404';
 	created_at: string;
 	updated_at: string;
 }

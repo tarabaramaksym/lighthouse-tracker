@@ -53,7 +53,7 @@ class CronService {
 				include: [{
 					model: Website,
 					as: 'websites',
-					where: { status: 'monitoring' },
+					where: { status: ['monitoring', '404'] },
 					required: true
 				}]
 			});
@@ -63,7 +63,7 @@ class CronService {
 			for (const domain of domainsToAudit) {
 				try {
 					const websites = await domain.getWebsites({
-						where: { status: 'monitoring' },
+						where: { status: ['monitoring', '404'] },
 						include: [{
 							model: Domain,
 							as: 'domain'
@@ -99,19 +99,19 @@ class CronService {
 				include: [{
 					model: Website,
 					as: 'websites',
-					where: { status: 'monitoring' },
+					where: { status: ['monitoring', '404'] },
 					required: true
 				}]
 			});
 
-			console.log(`[CronService] TEST MODE: Found ${allDomains.length} active domains with monitoring websites`);
+			console.log(`[CronService] TEST MODE: Found ${allDomains.length} active domains with monitoring and 404 websites`);
 
 			for (const domain of allDomains) {
 				try {
 					console.log(`[CronService] TEST MODE: Auditing domain: ${domain.url}`);
 
 					const websites = await domain.getWebsites({
-						where: { status: 'monitoring' },
+						where: { status: ['monitoring', '404'] },
 						include: [{
 							model: Domain,
 							as: 'domain'

@@ -5,12 +5,42 @@ const { exec } = require('child_process');
 const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const http = require('http');
 
 const execAsync = promisify(exec);
 
 class LighthouseRunner {
 	constructor() {
 		this.chrome = null;
+		this.categoryMappings = null;
+		this.lastReportJson = null;
+	}
+
+	async checkIf404(url) {
+		return new Promise((resolve) => {
+			const protocol = url.startsWith('https:') ? https : http;
+			const timeout = 10000; // 10 second timeout
+
+			const req = protocol.get(url, { timeout }, (res) => {
+				const is404 = res.statusCode !== 200;
+				console.log(`[LighthouseRunner] HTTP ${res.statusCode} for ${url}`);
+				resolve({ is404, statusCode: res.statusCode });
+			});
+
+			req.on('error', (error) => {
+				console.log(`[LighthouseRunner] HTTP error for ${url}:`, error.message);
+				resolve({ is404: false, statusCode: null, error: error.message });
+			});
+
+			req.on('timeout', () => {
+				console.log(`[LighthouseRunner] HTTP timeout for ${url}`);
+				req.destroy();
+				resolve({ is404: false, statusCode: null, error: 'timeout' });
+			});
+
+			req.setTimeout(timeout);
+		});
 	}
 
 	async runForDomain(domain) {
@@ -18,10 +48,12 @@ class LighthouseRunner {
 			console.log(`[LighthouseRunner] Starting audit for domain: ${domain.url}`);
 
 			const websites = await domain.getWebsites({
-				where: { status: 'monitoring' }
+				where: {
+					status: ['monitoring', '404']
+				}
 			});
 
-			console.log(`[LighthouseRunner] Found ${websites.length} monitoring websites for domain ${domain.url}`);
+			console.log(`[LighthouseRunner] Found ${websites.length} websites (monitoring + 404) for domain ${domain.url}`);
 
 			for (const website of websites) {
 				await this.runForWebsite(website);
@@ -37,8 +69,7 @@ class LighthouseRunner {
 	async runForWebsite(website) {
 		try {
 			console.log(`[LighthouseRunner] Running audit for website: ${website.path}`);
-			console.log(website, 'test');
-			let fullUrl = `${website.domain.url}${website.path}`;
+			let fullUrl = `${website.domain.url}${website.path === '/' ? '' : website.path}`;
 
 			if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
 				fullUrl = `https://${fullUrl}`;
@@ -46,17 +77,31 @@ class LighthouseRunner {
 
 			console.log(`[LighthouseRunner] Full URL: ${fullUrl}`);
 
-			const lighthouseData = await this.runLighthouse(fullUrl);
+			const httpCheck = await this.checkIf404(fullUrl);
+			console.log('[LighthouseRunner] HTTP Check for ', fullUrl, ']', httpCheck);
 
-			if (lighthouseData) {
-				await this.storeResults(website, lighthouseData, false);
+			if (httpCheck.is404) {
+				await this.updateWebsiteStatus(website, '404');
+				console.log(`[LighthouseRunner] Detected 404 page for website: ${website.path}, status updated to 404`);
+				return;
+			}
+
+			if (website.status === '404') {
+				await this.updateWebsiteStatus(website, 'monitoring');
+				console.log(`[LighthouseRunner] Website ${website.path} is no longer 404, status updated to monitoring`);
+			}
+
+			const lighthouseResult = await this.runLighthouse(fullUrl);
+
+			if (lighthouseResult && lighthouseResult.parsedData) {
+				await this.storeResults(website, lighthouseResult.parsedData, false);
 				console.log(`[LighthouseRunner] Successfully stored desktop results for website: ${website.path}`);
 			}
 
-			const mobileLighthouseData = await this.runLighthouse(fullUrl, true);
+			const mobileLighthouseResult = await this.runLighthouse(fullUrl, true);
 
-			if (mobileLighthouseData) {
-				await this.storeResults(website, mobileLighthouseData, true);
+			if (mobileLighthouseResult && mobileLighthouseResult.parsedData) {
+				await this.storeResults(website, mobileLighthouseResult.parsedData, true);
 				console.log(`[LighthouseRunner] Successfully stored mobile results for website: ${website.path}`);
 			}
 		} catch (error) {
@@ -78,7 +123,7 @@ class LighthouseRunner {
 				settings: {
 					logLevel: 'info',
 					output: 'json',
-					onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'],
+					onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
 					maxWaitForLoad: 30000,
 					timeout: 60000,
 					formFactor: isMobile ? 'mobile' : 'desktop',
@@ -142,11 +187,14 @@ class LighthouseRunner {
 				throw new Error('Invalid Lighthouse report structure');
 			}
 
+			this.lastReportJson = reportJson; // Store the report for category mapping
+			this.buildCategoryMappings(); // Build mappings after each run
+
 			console.log(`[LighthouseRunner] Lighthouse audit completed successfully (${isMobile ? 'mobile' : 'desktop'})`);
 
-			this.saveRawLighthouseData(url, reportJson, isMobile);
+			//this.saveRawLighthouseData(url, reportJson, isMobile);
 
-			return this.parseLighthouseResults(reportJson);
+			return { rawReport: reportJson, parsedData: this.parseLighthouseResults(reportJson) };
 		} catch (error) {
 			console.error(`[LighthouseRunner] Lighthouse execution error for ${url} (${isMobile ? 'mobile' : 'desktop'}):`, error);
 			throw error;
@@ -176,7 +224,7 @@ class LighthouseRunner {
 				accessibility_score: this.calculateCategoryScore(categories.accessibility, audits),
 				best_practices_score: this.calculateCategoryScore(categories['best-practices'], audits),
 				seo_score: this.calculateCategoryScore(categories.seo, audits),
-				pwa_score: this.calculateCategoryScore(categories.pwa, audits)
+				pwa_score: categories.pwa ? this.calculateCategoryScore(categories.pwa, audits) : null
 			};
 
 			console.log(`[LighthouseRunner] Calculated scores:`, scores);
@@ -296,18 +344,24 @@ class LighthouseRunner {
 	}
 
 	getCategoryFromAuditId(auditId) {
-		if (auditId.includes('performance') || auditId.includes('speed') || auditId.includes('time')) {
-			return 'performance';
-		} else if (auditId.includes('accessibility') || auditId.includes('a11y')) {
-			return 'accessibility';
-		} else if (auditId.includes('best-practices') || auditId.includes('security')) {
-			return 'best-practices';
-		} else if (auditId.includes('seo')) {
-			return 'seo';
-		} else if (auditId.includes('pwa') || auditId.includes('service-worker')) {
-			return 'pwa';
+		if (!this.categoryMappings) {
+			this.buildCategoryMappings();
 		}
-		return null;
+		return this.categoryMappings[auditId] || null;
+	}
+
+	buildCategoryMappings() {
+		this.categoryMappings = {};
+
+		if (this.lastReportJson && this.lastReportJson.categories) {
+			for (const [categoryName, category] of Object.entries(this.lastReportJson.categories)) {
+				if (category.auditRefs) {
+					for (const auditRef of category.auditRefs) {
+						this.categoryMappings[auditRef.id] = categoryName;
+					}
+				}
+			}
+		}
 	}
 
 	getSeverityFromScore(score) {
@@ -360,6 +414,19 @@ class LighthouseRunner {
 				severity: issueData.severity,
 				details: issueData.details
 			}, { transaction });
+		}
+	}
+
+	async updateWebsiteStatus(website, status) {
+		const { sequelize } = require('../../models');
+		const transaction = await sequelize.transaction();
+
+		try {
+			await website.update({ status }, { transaction });
+			await transaction.commit();
+		} catch (error) {
+			await transaction.rollback();
+			throw error;
 		}
 	}
 }

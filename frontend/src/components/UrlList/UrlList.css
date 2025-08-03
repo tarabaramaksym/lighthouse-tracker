@@ -86,6 +86,11 @@
 	color: var(--color-status-ignored-text);
 }
 
+.url-status-404 {
+	background-color: var(--color-status-404-bg);
+	color: var(--color-status-404-text);
+}
+
 .no-domain-selected,
 .loading-urls,
 .no-urls,

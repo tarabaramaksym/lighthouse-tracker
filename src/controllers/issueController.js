@@ -2,403 +2,401 @@ const { Issue, Record, Website, Domain, IssueRecord } = require('../models');
 const { Op } = require('sequelize');
 
 const getDailyIssues = async (req, res) => {
-  try {
-    const { domainId, websiteId, date } = req.params;
-    const isMobile = req.query.isMobile === 'true';
-    
-    const targetDate = date || new Date().toISOString().split('T')[0];
+	try {
+		const { domainId, websiteId, date } = req.params;
+		const isMobile = req.query.isMobile === 'true';
 
-    const domain = await Domain.findOne({
-      where: { id: domainId, user_id: req.user.id }
-    });
+		const targetDate = date || new Date().toISOString().split('T')[0];
 
-    if (!domain) {
-      return res.status(404).json({
-        success: false,
-        message: 'Domain not found'
-      });
-    }
+		const domain = await Domain.findOne({
+			where: { id: domainId, user_id: req.user.id }
+		});
 
-    const website = await Website.findOne({
-      where: { id: websiteId, domain_id: domainId }
-    });
+		if (!domain) {
+			return res.status(404).json({
+				success: false,
+				message: 'Domain not found'
+			});
+		}
 
-    if (!website) {
-      return res.status(404).json({
-        success: false,
-        message: 'Website not found'
-      });
-    }
+		const website = await Website.findOne({
+			where: { id: websiteId, domain_id: domainId }
+		});
 
-    const startOfDay = new Date(targetDate + 'T00:00:00');
-    const endOfDay = new Date(targetDate + 'T23:59:59.999');
+		if (!website) {
+			return res.status(404).json({
+				success: false,
+				message: 'Website not found'
+			});
+		}
 
-    const records = await Record.findAll({
-      include: [
-        {
-          model: Website,
-          as: 'website',
-          where: { id: websiteId, domain_id: domainId }
-        }
-      ],
-      where: {
-        createdAt: {
-          [Op.between]: [startOfDay, endOfDay]
-        },
-        is_mobile: isMobile
-      },
-      order: [['createdAt', 'DESC']]
-    });
+		const startOfDay = new Date(targetDate + 'T00:00:00');
+		const endOfDay = new Date(targetDate + 'T23:59:59.999');
 
-    const issues = await Issue.findAll({
-      include: [
-        {
-          model: Record,
-          through: { 
-            model: IssueRecord,
-            attributes: ['severity', 'savings_time', 'savings_bytes']
-          },
-          as: 'records',
-          where: {
-            website_id: websiteId,
-            is_mobile: isMobile,
-            createdAt: {
-              [Op.between]: [startOfDay, endOfDay]
-            }
-          },
-          include: [
-            {
-              model: Website,
-              as: 'website',
-              where: { id: websiteId, domain_id: domainId }
-            }
-          ]
-        }
-      ],
-      order: [['category', 'ASC'], ['title', 'ASC']]
-    });
+		const records = await Record.findAll({
+			include: [
+				{
+					model: Website,
+					as: 'website',
+					where: { id: websiteId, domain_id: domainId }
+				}
+			],
+			where: {
+				createdAt: {
+					[Op.between]: [startOfDay, endOfDay]
+				},
+				is_mobile: isMobile
+			},
+			order: [['createdAt', 'DESC']]
+		});
 
-    const aggregatedIssues = issues.map(issue => {
-      const issueRecord = issue.records[0];
-      return {
-        id: issue.id,
-        issue_id: issue.issue_id,
-        title: issue.title,
-        description: issue.description,
-        category: issue.category,
-        affected_urls: issue.records.map(record => ({
-          website_id: record.website_id,
-          path: record.website.path,
-          record_id: record.id
-        })),
-        total_affected: issue.records.length,
-        severity: issueRecord?.IssueRecord?.severity || 'medium',
-        savings_time: issueRecord?.IssueRecord?.savings_time || null,
-        savings_bytes: issueRecord?.IssueRecord?.savings_bytes || null
-      };
-    });
+		const issues = await Issue.findAll({
+			include: [
+				{
+					model: Record,
+					through: {
+						model: IssueRecord,
+						attributes: ['severity', 'savings_time', 'savings_bytes']
+					},
+					as: 'records',
+					where: {
+						website_id: websiteId,
+						is_mobile: isMobile,
+						createdAt: {
+							[Op.between]: [startOfDay, endOfDay]
+						}
+					},
+					include: [
+						{
+							model: Website,
+							as: 'website',
+							where: { id: websiteId, domain_id: domainId }
+						}
+					]
+				}
+			],
+			order: [['category', 'ASC'], ['title', 'ASC']]
+		});
 
-    const performanceScores = records.length > 0 ? {
-      performance: records[0].performance_score,
-      accessibility: records[0].accessibility_score,
-      best_practices: records[0].best_practices_score,
-      seo: records[0].seo_score,
-      pwa: records[0].pwa_score,
-      first_contentful_paint: records[0].first_contentful_paint,
-      largest_contentful_paint: records[0].largest_contentful_paint,
-      total_blocking_time: records[0].total_blocking_time,
-      cumulative_layout_shift: records[0].cumulative_layout_shift,
-      speed_index: records[0].speed_index
-    } : null;
+		const aggregatedIssues = issues.map(issue => {
+			const issueRecord = issue.records[0];
+			return {
+				id: issue.id,
+				issue_id: issue.issue_id,
+				title: issue.title,
+				description: issue.description,
+				category: issue.category,
+				affected_urls: issue.records.map(record => ({
+					website_id: record.website_id,
+					path: record.website.path,
+					record_id: record.id
+				})),
+				total_affected: issue.records.length,
+				severity: issueRecord?.IssueRecord?.severity || 'medium',
+				savings_time: issueRecord?.IssueRecord?.savings_time || null,
+				savings_bytes: issueRecord?.IssueRecord?.savings_bytes || null
+			};
+		});
 
-    res.json({
-      success: true,
-      data: {
-        date: targetDate,
-        domain: {
-          id: domain.id,
-          url: domain.url
-        },
-        website: {
-          id: website.id,
-          path: website.path
-        },
-        performance_scores: performanceScores,
-        issues: aggregatedIssues,
-        total_issues: aggregatedIssues.length,
-        total_records: records.length
-      }
-    });
-  } catch (error) {
-    console.error('Get daily issues error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve daily issues'
-    });
-  }
+		const performanceScores = records.length > 0 ? {
+			performance: records[0].performance_score,
+			accessibility: records[0].accessibility_score,
+			best_practices: records[0].best_practices_score,
+			seo: records[0].seo_score,
+			pwa: records[0].pwa_score,
+			first_contentful_paint: records[0].first_contentful_paint,
+			largest_contentful_paint: records[0].largest_contentful_paint,
+			total_blocking_time: records[0].total_blocking_time,
+			cumulative_layout_shift: records[0].cumulative_layout_shift,
+			speed_index: records[0].speed_index
+		} : null;
+
+		res.json({
+			success: true,
+			data: {
+				date: targetDate,
+				domain: {
+					id: domain.id,
+					url: domain.url
+				},
+				website: {
+					id: website.id,
+					path: website.path
+				},
+				performance_scores: performanceScores,
+				issues: aggregatedIssues,
+				total_issues: aggregatedIssues.length,
+				total_records: records.length
+			}
+		});
+	} catch (error) {
+		console.error('Get daily issues error:', error);
+		res.status(500).json({
+			success: false,
+			message: 'Failed to retrieve daily issues'
+		});
+	}
 };
 
 const getCalendarData = async (req, res) => {
-  try {
-    const { domainId, websiteId, year, month } = req.params;
-    const isMobile = req.query.isMobile === 'true';
-    
-    const domain = await Domain.findOne({
-      where: { id: domainId, user_id: req.user.id }
-    });
+	try {
+		const { domainId, websiteId, year, month } = req.params;
+		const isMobile = req.query.isMobile === 'true';
 
-    if (!domain) {
-      return res.status(404).json({
-        success: false,
-        message: 'Domain not found'
-      });
-    }
+		const domain = await Domain.findOne({
+			where: { id: domainId, user_id: req.user.id }
+		});
 
-    const website = await Website.findOne({
-      where: { id: websiteId, domain_id: domainId }
-    });
+		if (!domain) {
+			return res.status(404).json({
+				success: false,
+				message: 'Domain not found'
+			});
+		}
 
-    if (!website) {
-      return res.status(404).json({
-        success: false,
-        message: 'Website not found'
-      });
-    }
+		const website = await Website.findOne({
+			where: { id: websiteId, domain_id: domainId }
+		});
 
-    const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
-    const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59, 999);
+		if (!website) {
+			return res.status(404).json({
+				success: false,
+				message: 'Website not found'
+			});
+		}
 
-    const records = await Record.findAll({
-      include: [
-        {
-          model: Website,
-          as: 'website',
-          where: { id: websiteId, domain_id: domainId }
-        }
-      ],
-      where: {
-        createdAt: {
-          [Op.between]: [startDate, endDate]
-        },
-        is_mobile: isMobile
-      },
-      order: [['createdAt', 'ASC']]
-    });
+		const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+		const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59, 999);
 
-    const dailyScores = {};
-    const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+		const records = await Record.findAll({
+			include: [
+				{
+					model: Website,
+					as: 'website',
+					where: { id: websiteId, domain_id: domainId }
+				}
+			],
+			where: {
+				createdAt: {
+					[Op.between]: [startDate, endDate]
+				},
+				is_mobile: isMobile
+			},
+			order: [['createdAt', 'ASC']]
+		});
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const currentDate = new Date(parseInt(year), parseInt(month) - 1, day);
-      const dateKey = currentDate.toISOString().split('T')[0];
-      
-      const dayRecords = records.filter(record => {
-        const recordDate = new Date(record.createdAt);
-        const recordLocalDate = new Date(recordDate.getTime() - (recordDate.getTimezoneOffset() * 60000));
-        return recordLocalDate.getDate() === day && 
-               recordLocalDate.getMonth() === parseInt(month) - 1 && 
-               recordLocalDate.getFullYear() === parseInt(year);
-      });
+		const dailyScores = {};
+		const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
 
-      if (dayRecords.length > 0) {
-        const latestRecord = dayRecords[dayRecords.length - 1];
-        dailyScores[dateKey] = {
-          performance: latestRecord.performance_score,
-          accessibility: latestRecord.accessibility_score,
-          best_practices: latestRecord.best_practices_score,
-          seo: latestRecord.seo_score,
-          pwa: latestRecord.pwa_score,
-          overall: Math.round(
-            (latestRecord.performance_score + 
-             latestRecord.accessibility_score + 
-             latestRecord.best_practices_score + 
-             latestRecord.seo_score + 
-             latestRecord.pwa_score) / 5
-          )
-        };
-      }
-    }
+		for (let day = 1; day <= daysInMonth; day++) {
+			const currentDate = new Date(parseInt(year), parseInt(month) - 1, day);
+			const dateKey = currentDate.toISOString().split('T')[0];
 
-    res.json({
-      success: true,
-      data: {
-        year: parseInt(year),
-        month: parseInt(month),
-        domain: {
-          id: domain.id,
-          url: domain.url
-        },
-        website: {
-          id: website.id,
-          path: website.path
-        },
-        daily_scores: dailyScores,
-        total_days_with_data: Object.keys(dailyScores).length
-      }
-    });
-  } catch (error) {
-    console.error('Get calendar data error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve calendar data'
-    });
-  }
+			const dayRecords = records.filter(record => {
+				const recordDate = new Date(record.createdAt);
+				const recordDateKey = recordDate.toISOString().split('T')[0];
+				return recordDateKey === dateKey;
+			});
+
+			if (dayRecords.length > 0) {
+				const latestRecord = dayRecords[dayRecords.length - 1];
+				dailyScores[dateKey] = {
+					performance: latestRecord.performance_score,
+					accessibility: latestRecord.accessibility_score,
+					best_practices: latestRecord.best_practices_score,
+					seo: latestRecord.seo_score,
+					pwa: latestRecord.pwa_score,
+					overall: Math.round(
+						(latestRecord.performance_score +
+							latestRecord.accessibility_score +
+							latestRecord.best_practices_score +
+							latestRecord.seo_score +
+							latestRecord.pwa_score) / 5
+					)
+				};
+			}
+		}
+
+		res.json({
+			success: true,
+			data: {
+				year: parseInt(year),
+				month: parseInt(month),
+				domain: {
+					id: domain.id,
+					url: domain.url
+				},
+				website: {
+					id: website.id,
+					path: website.path
+				},
+				daily_scores: dailyScores,
+				total_days_with_data: Object.keys(dailyScores).length
+			}
+		});
+	} catch (error) {
+		console.error('Get calendar data error:', error);
+		res.status(500).json({
+			success: false,
+			message: 'Failed to retrieve calendar data'
+		});
+	}
 };
 
 const getOldestDate = async (req, res) => {
-  try {
-    const { domainId, websiteId } = req.params;
-    const isMobile = req.query.isMobile === 'true';
-    
-    const domain = await Domain.findOne({
-      where: { id: domainId, user_id: req.user.id }
-    });
+	try {
+		const { domainId, websiteId } = req.params;
+		const isMobile = req.query.isMobile === 'true';
 
-    if (!domain) {
-      return res.status(404).json({
-        success: false,
-        message: 'Domain not found'
-      });
-    }
+		const domain = await Domain.findOne({
+			where: { id: domainId, user_id: req.user.id }
+		});
 
-    const website = await Website.findOne({
-      where: { id: websiteId, domain_id: domainId }
-    });
+		if (!domain) {
+			return res.status(404).json({
+				success: false,
+				message: 'Domain not found'
+			});
+		}
 
-    if (!website) {
-      return res.status(404).json({
-        success: false,
-        message: 'Website not found'
-      });
-    }
+		const website = await Website.findOne({
+			where: { id: websiteId, domain_id: domainId }
+		});
 
-    const oldestRecord = await Record.findOne({
-      include: [
-        {
-          model: Website,
-          as: 'website',
-          where: { id: websiteId, domain_id: domainId }
-        }
-      ],
-      where: {
-        is_mobile: isMobile
-      },
-      order: [['createdAt', 'ASC']]
-    });
+		if (!website) {
+			return res.status(404).json({
+				success: false,
+				message: 'Website not found'
+			});
+		}
 
-    if (!oldestRecord) {
-      return res.json({
-        success: true,
-        data: {
-          oldest_date: null,
-          has_data: false
-        }
-      });
-    }
+		const oldestRecord = await Record.findOne({
+			include: [
+				{
+					model: Website,
+					as: 'website',
+					where: { id: websiteId, domain_id: domainId }
+				}
+			],
+			where: {
+				is_mobile: isMobile
+			},
+			order: [['createdAt', 'ASC']]
+		});
 
-    const oldestDate = oldestRecord.createdAt.toISOString().split('T')[0];
+		if (!oldestRecord) {
+			return res.json({
+				success: true,
+				data: {
+					oldest_date: null,
+					has_data: false
+				}
+			});
+		}
 
-    res.json({
-      success: true,
-      data: {
-        oldest_date: oldestDate,
-        has_data: true
-      }
-    });
-  } catch (error) {
-    console.error('Get oldest date error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve oldest date'
-    });
-  }
+		const oldestDate = oldestRecord.createdAt.toISOString().split('T')[0];
+
+		res.json({
+			success: true,
+			data: {
+				oldest_date: oldestDate,
+				has_data: true
+			}
+		});
+	} catch (error) {
+		console.error('Get oldest date error:', error);
+		res.status(500).json({
+			success: false,
+			message: 'Failed to retrieve oldest date'
+		});
+	}
 };
 
 const getChartData = async (req, res) => {
-  try {
-    const { domainId, websiteId, days } = req.params;
-    const isMobile = req.query.isMobile === 'true';
-    
-    const domain = await Domain.findOne({
-      where: { id: domainId, user_id: req.user.id }
-    });
+	try {
+		const { domainId, websiteId, days } = req.params;
+		const isMobile = req.query.isMobile === 'true';
 
-    if (!domain) {
-      return res.status(404).json({
-        success: false,
-        message: 'Domain not found'
-      });
-    }
+		const domain = await Domain.findOne({
+			where: { id: domainId, user_id: req.user.id }
+		});
 
-    const website = await Website.findOne({
-      where: { id: websiteId, domain_id: domainId }
-    });
+		if (!domain) {
+			return res.status(404).json({
+				success: false,
+				message: 'Domain not found'
+			});
+		}
 
-    if (!website) {
-      return res.status(404).json({
-        success: false,
-        message: 'Website not found'
-      });
-    }
+		const website = await Website.findOne({
+			where: { id: websiteId, domain_id: domainId }
+		});
 
-    const daysAgo = new Date();
-    daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+		if (!website) {
+			return res.status(404).json({
+				success: false,
+				message: 'Website not found'
+			});
+		}
 
-    const records = await Record.findAll({
-      include: [
-        {
-          model: Website,
-          as: 'website',
-          where: { id: websiteId, domain_id: domainId }
-        }
-      ],
-      where: {
-        createdAt: {
-          [Op.gte]: daysAgo
-        },
-        is_mobile: isMobile
-      },
-      order: [['createdAt', 'ASC']],
-      attributes: [
-        'createdAt',
-        'performance_score',
-        'accessibility_score',
-        'best_practices_score',
-        'seo_score',
-        'pwa_score'
-      ]
-    });
+		const daysAgo = new Date();
+		daysAgo.setDate(daysAgo.getDate() - parseInt(days));
 
-    const chartData = records.map(record => {
-      const recordDate = new Date(record.createdAt);
-      const localDate = new Date(recordDate.getTime() - (recordDate.getTimezoneOffset() * 60000));
-      
-      return {
-        date: localDate.toISOString().split('T')[0],
-        performance: record.performance_score || 0,
-        accessibility: record.accessibility_score || 0,
-        best_practices: record.best_practices_score || 0,
-        seo: record.seo_score || 0,
-        pwa: record.pwa_score || 0
-      };
-    });
+		const records = await Record.findAll({
+			include: [
+				{
+					model: Website,
+					as: 'website',
+					where: { id: websiteId, domain_id: domainId }
+				}
+			],
+			where: {
+				createdAt: {
+					[Op.gte]: daysAgo
+				},
+				is_mobile: isMobile
+			},
+			order: [['createdAt', 'ASC']],
+			attributes: [
+				'createdAt',
+				'performance_score',
+				'accessibility_score',
+				'best_practices_score',
+				'seo_score',
+				'pwa_score'
+			]
+		});
 
-    res.json({
-      success: true,
-      data: chartData
-    });
-  } catch (error) {
-    console.error('Get chart data error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve chart data'
-    });
-  }
+		const chartData = records.map(record => {
+			const recordDate = new Date(record.createdAt);
+			const localDate = new Date(recordDate.getTime() - (recordDate.getTimezoneOffset() * 60000));
+
+			return {
+				date: localDate.toISOString().split('T')[0],
+				performance: record.performance_score || 0,
+				accessibility: record.accessibility_score || 0,
+				best_practices: record.best_practices_score || 0,
+				seo: record.seo_score || 0,
+				pwa: record.pwa_score || 0
+			};
+		});
+
+		res.json({
+			success: true,
+			data: chartData
+		});
+	} catch (error) {
+		console.error('Get chart data error:', error);
+		res.status(500).json({
+			success: false,
+			message: 'Failed to retrieve chart data'
+		});
+	}
 };
 
 module.exports = {
-  getDailyIssues,
-  getCalendarData,
-  getOldestDate,
-  getChartData
+	getDailyIssues,
+	getCalendarData,
+	getOldestDate,
+	getChartData
 }; 
