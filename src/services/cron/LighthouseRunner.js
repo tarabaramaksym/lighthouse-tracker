@@ -1,5 +1,4 @@
 const { Record, Issue, IssueRecord } = require('../../models');
-const lighthouse = require('lighthouse').default;
 const chromeLauncher = require('chrome-launcher');
 const { exec } = require('child_process');
 const { promisify } = require('util');
@@ -117,6 +116,8 @@ class LighthouseRunner {
 			this.chrome = await chromeLauncher.launch({
 				chromeFlags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--headless', '--disable-web-security', '--disable-features=VizDisplayCompositor']
 			});
+
+			const { default: lighthouse } = await import('lighthouse');
 
 			const config = {
 				extends: 'lighthouse:default',
