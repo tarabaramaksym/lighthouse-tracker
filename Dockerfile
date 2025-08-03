@@ -9,11 +9,24 @@ RUN apk add --no-cache \
     freetype-dev \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    dbus \
+    glib \
+    gtk+3.0 \
+    libdrm \
+    libxcomposite \
+    libxdamage \
+    libxrandr \
+    libxss \
+    mesa \
+    pango \
+    xvfb
 
 ENV CHROME_PATH=/usr/bin/chromium-browser
 ENV CHROME_BIN=/usr/bin/chromium-browser
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV DISPLAY=:99
+ENV CHROME_HEADLESS=true
 
 COPY package*.json ./
 RUN npm ci --only=production
