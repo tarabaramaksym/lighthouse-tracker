@@ -13,16 +13,17 @@ interface Domain {
 interface DomainDropdownProps {
 	selectedDomainId: number | null;
 	onDomainChange: (domainId: number) => void;
+	reloadKey?: number;
 }
 
-export function DomainDropdown({ selectedDomainId, onDomainChange }: DomainDropdownProps) {
+export function DomainDropdown({ selectedDomainId, onDomainChange, reloadKey }: DomainDropdownProps) {
 	const [domains, setDomains] = useState<Domain[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		fetchDomains();
-	}, []);
+	}, [reloadKey]);
 
 	useEffect(() => {
 		if (domains.length > 0 && !selectedDomainId) {

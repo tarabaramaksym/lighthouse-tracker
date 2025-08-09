@@ -37,6 +37,7 @@ export function Dashboard() {
 	const [calendarError, setCalendarError] = useState<string | null>(null);
 	const [editingDomain, setEditingDomain] = useState<any>(null);
 	const [domains, setDomains] = useState<any[]>([]);
+	const [domainReloadKey, setDomainReloadKey] = useState<number>(0);
 
 	const domainIdFromUrl = searchParams.get('domain');
 	const websiteIdFromUrl = searchParams.get('website');
@@ -188,6 +189,7 @@ export function Dashboard() {
 		setFormState('none');
 		setEditingDomain(null);
 		fetchDomains();
+		setDomainReloadKey(prev => prev + 1);
 	};
 
 	const handleCancelDomainForm = () => {
@@ -360,6 +362,7 @@ export function Dashboard() {
 						<DomainDropdown
 							selectedDomainId={selectedDomainId}
 							onDomainChange={handleDomainChange}
+							reloadKey={domainReloadKey}
 						/>
 						<Button onClick={handleUpdateDomainClick} title="Update domain">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
