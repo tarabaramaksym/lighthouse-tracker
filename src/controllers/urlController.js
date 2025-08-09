@@ -130,6 +130,7 @@ const deleteUrl = async (req, res) => {
 		const url = await Website.findOne({
 			include: [{
 				model: Domain,
+				as: 'domain',
 				where: { user_id: req.user.id }
 			}],
 			where: { id }

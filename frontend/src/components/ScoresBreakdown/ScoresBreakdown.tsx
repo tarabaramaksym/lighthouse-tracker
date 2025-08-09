@@ -191,8 +191,7 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 		{ key: 'performance', label: 'Performance' },
 		{ key: 'accessibility', label: 'Accessibility' },
 		{ key: 'best-practices', label: 'Best Practices' },
-		{ key: 'seo', label: 'SEO' },
-		{ key: 'pwa', label: 'PWA' }
+		{ key: 'seo', label: 'SEO' }
 	];
 
 	if (!domainId || !websiteId) {

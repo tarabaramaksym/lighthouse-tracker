@@ -115,3 +115,7 @@
 	font-size: 12px;
 	font-weight: 500;
 }
+
+.delete-url-button {
+	margin-left: 0;
+}
