@@ -4,6 +4,7 @@ import { FormContainer } from '@/components/FormContainer';
 import { Notification } from '@/components/Notifications/Notification';
 import { Button } from '@/components/Button';
 import './DomainForm.css';
+import { localHHMMToUTC, utcHHMMToLocal } from '@/utils/timezone';
 
 interface DomainFormProps {
 	onDomainCreated: () => void;
@@ -18,7 +19,7 @@ interface DomainFormProps {
 
 export function DomainForm({ onDomainCreated, onCancel, mode = 'create', domain }: DomainFormProps) {
 	const [url, setUrl] = useState(domain?.url || '');
-	const [lighthouseSchedule, setLighthouseSchedule] = useState(domain?.lighthouse_schedule || '12:00');
+	const [lighthouseSchedule, setLighthouseSchedule] = useState(utcHHMMToLocal(domain?.lighthouse_schedule || '12:00'));
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -44,10 +45,12 @@ export function DomainForm({ onDomainCreated, onCancel, mode = 'create', domain 
 			setIsSubmitting(true);
 			setError(null);
 
+			const utcTime = localHHMMToUTC(lighthouseSchedule);
+
 			if (mode === 'update' && domain) {
-				await apiService.domains.updateDomain(domain.id, cleanUrl, lighthouseSchedule);
+				await apiService.domains.updateDomain(domain.id, cleanUrl, utcTime);
 			} else {
-				await apiService.domains.createDomain(cleanUrl, lighthouseSchedule);
+				await apiService.domains.createDomain(cleanUrl, utcTime);
 			}
 			onDomainCreated();
 		} catch (err: any) {
