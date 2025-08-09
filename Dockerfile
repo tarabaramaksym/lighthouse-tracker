@@ -9,18 +9,7 @@ RUN apk add --no-cache \
     freetype-dev \
     harfbuzz \
     ca-certificates \
-    ttf-freefont \
-    dbus \
-    glib \
-    gtk+3.0 \
-    libdrm \
-    libxcomposite \
-    libxdamage \
-    libxrandr \
-    libxss \
-    mesa \
-    pango \
-    xvfb
+    ttf-freefont
 
 ENV CHROME_PATH=/usr/bin/chromium-browser
 ENV CHROME_BIN=/usr/bin/chromium-browser
@@ -40,4 +29,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"] 
+CMD ["npm", "start"]
