@@ -12,7 +12,7 @@ interface ButtonProps {
 export function Button({ children, className, title, onClick, disabled, type = 'button' }: ButtonProps) {
 	return (
 		<button
-			className={`button ${className}`}
+			className={`button ${className ? className : ''}`}
 			onClick={onClick || undefined}
 			title={title}
 			disabled={disabled}

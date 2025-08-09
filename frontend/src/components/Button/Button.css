@@ -20,3 +20,17 @@
 .button:active {
 	transform: scale(0.95);
 }
+
+.button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.button:disabled:hover {
+	border-color: var(--color-gray-2);
+	background-color: white;
+}
+
+.button:disabled:active {
+	transform: none;
+}

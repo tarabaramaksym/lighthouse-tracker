@@ -1,6 +1,7 @@
 export interface User {
 	id: number;
 	email: string;
+	is_read_only?: boolean;
 	created_at: string;
 	updated_at: string;
 }
