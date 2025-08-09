@@ -54,7 +54,7 @@ module.exports = (sequelize) => {
     },
     pwa_score: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       validate: {
         min: 0,
         max: 100
