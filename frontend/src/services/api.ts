@@ -37,7 +37,9 @@ class ApiService {
 					localStorage.removeItem('token');
 					localStorage.removeItem('user');
 				}
-				return Promise.reject(error);
+				const serverMessage = error.response?.data?.message || (typeof error.response?.data === 'string' ? error.response.data : null);
+				const message = serverMessage || error.message || 'Request failed';
+				return Promise.reject(new Error(message));
 			}
 		);
 	}

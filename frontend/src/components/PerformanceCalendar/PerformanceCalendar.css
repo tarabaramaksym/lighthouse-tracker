@@ -205,13 +205,6 @@
 	color: #dc2626;
 }
 
-.error-message {
-	color: var(--color-error);
-	text-align: center;
-	font-size: 14px;
-	padding: 20px;
-}
-
 .selection-message {
 	color: var(--color-gray-4);
 	text-align: center;

@@ -1,0 +1,31 @@
+.notification {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 16px;
+	border-radius: 8px;
+	font-size: 14px;
+	border: 1px solid transparent;
+}
+
+.notification-error {
+	background: var(--color-error-bg);
+	color: var(--color-error-text);
+	border-color: var(--color-error-border);
+}
+
+.notification-success {
+	background: var(--color-success-bg);
+	color: var(--color-success-text);
+	border-color: var(--color-success-border);
+}
+
+.notification-alert {
+	background: var(--color-gray-1);
+	color: var(--color-gray-4);
+	border-color: var(--color-gray-2);
+}
+
+.notification .icon {
+	display: inline-flex;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'preact/compat';
 import { apiService } from '@/services/api';
 import { FormContainer } from '@/components/FormContainer';
+import { Notification } from '@/components/Notifications/Notification';
 import { Button } from '@/components/Button';
 import './UrlForm.css';
 
@@ -64,9 +65,7 @@ export function UrlForm({ domainId, onUrlCreated, onCancel }: UrlFormProps) {
 					</div>
 
 					{error && (
-						<div className="error-message">
-							{error}
-						</div>
+						<Notification type="error" message={error} />
 					)}
 
 					<div className="form-actions">

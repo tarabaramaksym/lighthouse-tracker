@@ -1,6 +1,7 @@
 import { useState } from 'preact/compat';
 import { apiService } from '@/services/api';
 import { FormContainer } from '@/components/FormContainer';
+import { Notification } from '@/components/Notifications/Notification';
 import { Button } from '@/components/Button';
 import './DomainForm.css';
 
@@ -102,9 +103,7 @@ export function DomainForm({ onDomainCreated, onCancel, mode = 'create', domain 
 					</div>
 
 					{error && (
-						<div className="error-message">
-							{error}
-						</div>
+						<Notification type="error" message={error} />
 					)}
 
 					<div className="form-actions">

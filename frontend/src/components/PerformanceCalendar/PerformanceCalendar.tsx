@@ -2,6 +2,7 @@ import { useState, useEffect } from 'preact/compat';
 import { Placeholder } from '@/components/Placeholder';
 import { Button } from '@/components/Button';
 import './PerformanceCalendar.css';
+import { Notification } from '@/components/Notifications/Notification';
 
 interface DailyScore {
 	performance: number;
@@ -171,9 +172,7 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 					mobileHeight="480px"
 					mobileWidth="478px"
 				>
-					<div className="error-message">
-						{error}
-					</div>
+					<Notification type="error" message={error} />
 				</Placeholder>
 			</div>
 		);

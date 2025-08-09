@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/Button';
+import { Notification } from '@/components/Notifications/Notification';
 
 export function Login() {
 	const { login, error, clearError } = useAuth();
@@ -30,7 +31,7 @@ export function Login() {
 
 	return (
 		<form onSubmit={handleSubmit} className="form-container">
-			{error && <div className="error-message">{error}</div>}
+			{error && <Notification type="error" message={error} />}
 
 			<div className="form-group">
 				<label htmlFor="email">Email</label>

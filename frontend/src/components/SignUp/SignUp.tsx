@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/Button';
+import { Notification } from '@/components/Notifications/Notification';
 
 export function SignUp() {
 	const { register, error, clearError } = useAuth();
@@ -42,7 +43,7 @@ export function SignUp() {
 	return (
 		<form onSubmit={handleSubmit} className="form-container">
 			{(error || validationError) && (
-				<div className="error-message">{error || validationError}</div>
+				<Notification type="error" message={error || validationError} />
 			)}
 
 			<div className="form-group">
