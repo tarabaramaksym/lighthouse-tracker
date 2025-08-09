@@ -19,7 +19,7 @@ interface DailyData {
 		accessibility: number;
 		best_practices: number;
 		seo: number;
-		pwa: number;
+		pwa: number | null;
 		first_contentful_paint?: number;
 		largest_contentful_paint?: number;
 		total_blocking_time?: number;
@@ -48,13 +48,15 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 
 
 
-	const getScoreColor = (score: number): string => {
+	const getScoreColor = (score: number | null): string => {
+		if (score === null) return 'gray';
 		if (score >= 90) return 'green';
 		if (score >= 50) return 'yellow';
 		return 'red';
 	};
 
-	const getScoreText = (score: number): string => {
+	const getScoreText = (score: number | null): string => {
+		if (score === null) return 'Not available';
 		if (score >= 90) return 'Good';
 		if (score >= 50) return 'Needs improvement';
 		return 'Poor';
@@ -170,7 +172,7 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 			<div className="tab-content">
 				<div className="score-display">
 					<div className={`score-circle ${color}`}>
-						<span className="score-number">{score}</span>
+						<span className="score-number">{score === null ? 'N/A' : score}</span>
 					</div>
 					<div className="score-text">{text}</div>
 				</div>
@@ -238,7 +240,7 @@ export function ScoresBreakdown({ domainId, websiteId, selectedDate, data, isLoa
 							<span className="tab-label">{tab.label}</span>
 							{data?.performance_scores && hasScore(tab.key) && (
 								<span className={`tab-score ${getScoreColor(data.performance_scores[getScoreKey(tab.key)])}`}>
-									{data.performance_scores[getScoreKey(tab.key)]}
+									{data.performance_scores[getScoreKey(tab.key)] === null ? 'N/A' : data.performance_scores[getScoreKey(tab.key)]}
 								</span>
 							)}
 							{data?.issues && (

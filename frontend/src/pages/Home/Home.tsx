@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'preact/compat';
+import { useState, useEffect } from 'preact/compat';
 import dayPng from '@/assets/calendar_day.png';
 import nightPng from '@/assets/calendar_night.png';
 import clouds from '@/assets/clouds.png';
@@ -8,11 +8,16 @@ import evening from '@/assets/evening.png';
 import night from '@/assets/night.png';
 import { LighthouseEffect } from '@/components/LighthouseEffect';
 import { Button } from '@/components/Button';
+import { preloadHomePageAssets } from '@/utils/globalPreloader';
 import './Home.css';
 
 export function Home() {
 	const navigate = useNavigate();
 	const [isYearly, setIsYearly] = useState(false);
+
+	useEffect(() => {
+		preloadHomePageAssets();
+	}, []);
 
 	const handleSignIn = () => {
 		navigate('/auth?type=login');

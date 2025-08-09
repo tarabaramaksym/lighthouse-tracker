@@ -8,7 +8,7 @@ interface DailyScore {
 	accessibility: number;
 	best_practices: number;
 	seo: number;
-	pwa: number;
+	pwa: number | null;
 	overall: number;
 }
 

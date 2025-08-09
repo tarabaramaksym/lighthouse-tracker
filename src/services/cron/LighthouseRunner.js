@@ -21,7 +21,7 @@ class LighthouseRunner {
 			const timeout = 10000; // 10 second timeout
 
 			const req = protocol.get(url, { timeout }, (res) => {
-				const is404 = res.statusCode !== 200;
+				const is404 = res.statusCode === 404;
 				console.log(`[LighthouseRunner] HTTP ${res.statusCode} for ${url}`);
 				resolve({ is404, statusCode: res.statusCode });
 			});

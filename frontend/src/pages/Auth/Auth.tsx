@@ -4,6 +4,7 @@ import Login from '@/components/Login/Login';
 import SignUp from '@/components/SignUp/SignUp';
 import { LighthouseEffect } from '@/components/LighthouseEffect';
 import { Button } from '@/components/Button';
+import { preloadAuthPageAssets } from '@/utils/globalPreloader';
 import dayPng from '@/assets/day.png';
 import nightPng from '@/assets/night.png';
 
@@ -14,6 +15,8 @@ export function Auth() {
 	const [isLogin, setIsLogin] = useState(true);
 
 	useEffect(() => {
+		preloadAuthPageAssets();
+
 		const type = searchParams.get('type');
 		if (type === 'signup') {
 			setIsLogin(false);

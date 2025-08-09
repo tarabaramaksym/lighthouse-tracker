@@ -207,11 +207,28 @@ const getCalendarData = async (req, res) => {
 					seo: latestRecord.seo_score,
 					pwa: latestRecord.pwa_score,
 					overall: Math.round(
-						(latestRecord.performance_score +
-							latestRecord.accessibility_score +
-							latestRecord.best_practices_score +
-							latestRecord.seo_score +
-							latestRecord.pwa_score) / 5
+						(() => {
+							const baseScores = [
+								latestRecord.performance_score,
+								latestRecord.accessibility_score,
+								latestRecord.best_practices_score,
+								latestRecord.seo_score
+							];
+							if (latestRecord.pwa_score !== null) {
+								baseScores.push(latestRecord.pwa_score);
+							}
+
+							const weightedScores = [];
+
+							baseScores.forEach(score => {
+								weightedScores.push(score);
+								if (score < 50) {
+									weightedScores.push(score);
+								}
+							});
+
+							return weightedScores.reduce((sum, score) => sum + score, 0) / weightedScores.length;
+						})()
 					)
 				};
 			}
