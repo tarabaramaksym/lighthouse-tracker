@@ -9,6 +9,11 @@
 	margin: 0 auto;
 }
 
+.domains-limits {
+	text-align: left;
+	margin: 0;
+}
+
 .dashboard-card {
 	background: var(--color-white);
 	border-radius: 12px;

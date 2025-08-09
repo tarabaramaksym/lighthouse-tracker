@@ -23,6 +23,11 @@ module.exports = (sequelize) => {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: false
+		},
+		plan: {
+			type: DataTypes.ENUM('free', 'pro', 'pro-plus'),
+			allowNull: false,
+			defaultValue: 'free'
 		}
 	}, {
 		timestamps: true,

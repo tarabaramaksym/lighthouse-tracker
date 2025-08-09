@@ -9,7 +9,8 @@ import { UrlForm } from '@/components/UrlForm';
 import { PerformanceCalendar } from '@/components/PerformanceCalendar';
 import { ScoresBreakdown } from '@/components/ScoresBreakdown';
 import { ScoresChart, ChartControls } from '@/components/ScoresChart';
-import { FormContainer } from '@/components/FormContainer';
+// import { FormContainer } from '@/components/FormContainer';
+import { getPlanLimits } from '@/services/planLimits';
 import { useDataCache } from '@/hooks/useDataCache';
 import { apiService } from '@/services/api';
 import './Dashboard.css';
@@ -239,9 +240,9 @@ export function Dashboard() {
 		setViewState(view);
 	};
 
-	const handleMobileToggle = () => {
-		setIsMobile(!isMobile);
-	};
+	// const handleMobileToggle = () => {
+	//     setIsMobile(!isMobile);
+	// };
 
 	const renderMainContent = () => {
 		switch (formState) {
@@ -356,29 +357,28 @@ export function Dashboard() {
 	return (
 		<div className="dashboard-container">
 			<main className="dashboard-content">
-				{/* Dashbaard top settings area */}
-				<section style="display: flex; justify-content: space-between; margin-bottom: 24px">
+				<p className="domains-limits url-count" aria-label={`Domains used ${domains.length} out of your plan limit ${getPlanLimits(user?.plan).maxDomains}`}>
+					{domains.length}/{getPlanLimits(user?.plan).maxDomains} Domains
+				</p>
+				<section style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px">
 					<section style="display: flex;">
 						<DomainDropdown
 							selectedDomainId={selectedDomainId}
 							onDomainChange={handleDomainChange}
 							reloadKey={domainReloadKey}
 						/>
-                        <Button onClick={handleUpdateDomainClick} title={`Update domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
+						<Button onClick={handleUpdateDomainClick} title={`Update domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 								<path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 							</svg>
 						</Button>
 
-                        <Button onClick={handleAddDomainClick} title={`Add domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
+						<Button onClick={handleAddDomainClick} title={`Add domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 							</svg>
 						</Button>
-					</section>
-					<section style="display: flex;">
-						{/* Settings & Alerts buttons*/}
 					</section>
 				</section>
 				{/* Main content area */}

@@ -1,4 +1,5 @@
 const { Domain } = require('../models');
+const { getLimitsForPlan } = require('../utils/planLimits');
 const ScheduleValidator = require('../services/cron/ScheduleValidator');
 
 const getDomains = async (req, res) => {
@@ -56,6 +57,16 @@ const createDomain = async (req, res) => {
 			return res.status(409).json({
 				success: false,
 				message: 'Domain already exists for this user'
+			});
+		}
+
+		const limits = getLimitsForPlan(req.user.plan);
+		const currentCount = await Domain.count({ where: { user_id: req.user.id } });
+
+		if (currentCount >= limits.maxDomains) {
+			return res.status(403).json({
+				success: false,
+				message: 'Domain limit reached for your plan'
 			});
 		}
 

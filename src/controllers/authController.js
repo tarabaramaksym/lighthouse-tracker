@@ -27,6 +27,7 @@ const register = async (req, res) => {
 			id: user.id,
 			email: user.email,
 			is_read_only: user.is_read_only,
+			plan: user.plan,
 			created_at: user.createdAt,
 			updated_at: user.updatedAt
 		};
@@ -72,6 +73,7 @@ const login = async (req, res) => {
 			id: user.id,
 			email: user.email,
 			is_read_only: user.is_read_only,
+			plan: user.plan,
 			created_at: user.createdAt,
 			updated_at: user.updatedAt
 		};
@@ -97,6 +99,7 @@ const getMe = async (req, res) => {
 			id: req.user.id,
 			email: req.user.email,
 			is_read_only: req.user.is_read_only,
+			plan: req.user.plan,
 			created_at: req.user.createdAt,
 			updated_at: req.user.updatedAt
 		};

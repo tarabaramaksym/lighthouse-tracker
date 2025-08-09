@@ -1,4 +1,5 @@
 const { Website, Domain } = require('../models');
+const { getLimitsForPlan } = require('../utils/planLimits');
 
 const getUrls = async (req, res) => {
 	try {
@@ -90,6 +91,16 @@ const createUrl = async (req, res) => {
 			return res.status(409).json({
 				success: false,
 				message: 'URL already exists for this domain'
+			});
+		}
+
+		const limits = getLimitsForPlan(req.user.plan);
+		const existingCount = await Website.count({ where: { domain_id: domainId } });
+
+		if (existingCount >= limits.maxUrls) {
+			return res.status(403).json({
+				success: false,
+				message: 'URL limit reached for your plan'
 			});
 		}
 

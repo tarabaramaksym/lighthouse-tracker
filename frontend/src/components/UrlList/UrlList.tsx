@@ -2,6 +2,7 @@ import { useState, useEffect } from 'preact/compat';
 import { apiService } from '@/services/api';
 import { Button } from '@/components/Button';
 import { useAuth } from '@/hooks/useAuth';
+import { getPlanLimits } from '@/services/planLimits';
 import './UrlList.css';
 
 interface Url {
@@ -21,6 +22,7 @@ interface UrlListProps {
 
 export function UrlList({ domainId, selectedWebsiteId, onAddUrl, onWebsiteSelect }: UrlListProps) {
 	const { user } = useAuth();
+	const limits = getPlanLimits(user?.plan);
 	const [urls, setUrls] = useState<Url[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -104,7 +106,9 @@ export function UrlList({ domainId, selectedWebsiteId, onAddUrl, onWebsiteSelect
 			<div className="url-list-header">
 				<h4>URLs</h4>
 				<div className="url-list-actions">
-					<span className="url-count">{urls.length} URLs</span>
+					<span className="url-count" aria-label={`URLs used ${urls.length} out of your plan limit ${limits.maxUrls}`}>
+						{urls.length}/{limits.maxUrls} URLs
+					</span>
 					<Button title={`Add URL${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} onClick={onAddUrl} disabled={!domainId || !!user?.is_read_only} className="add-url-button">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
