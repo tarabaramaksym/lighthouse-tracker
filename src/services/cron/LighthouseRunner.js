@@ -19,22 +19,33 @@ class LighthouseRunner {
 		return new Promise((resolve) => {
 			const protocol = url.startsWith('https:') ? https : http;
 			const timeout = 10000; // 10 second timeout
+			let settled = false;
 
 			const req = protocol.get(url, { timeout }, (res) => {
 				const is404 = res.statusCode === 404;
 				console.log(`[LighthouseRunner] HTTP ${res.statusCode} for ${url}`);
-				resolve({ is404, statusCode: res.statusCode });
+				try { res.resume(); } catch (_) { }
+				if (!settled) {
+					settled = true;
+					resolve({ is404, statusCode: res.statusCode });
+				}
 			});
 
 			req.on('error', (error) => {
 				console.log(`[LighthouseRunner] HTTP error for ${url}:`, error.message);
-				resolve({ is404: false, statusCode: null, error: error.message });
+				if (!settled) {
+					settled = true;
+					resolve({ is404: false, statusCode: null, error: error.message });
+				}
 			});
 
 			req.on('timeout', () => {
 				console.log(`[LighthouseRunner] HTTP timeout for ${url}`);
-				req.destroy();
-				resolve({ is404: false, statusCode: null, error: 'timeout' });
+				try { req.destroy(); } catch (_) { }
+				if (!settled) {
+					settled = true;
+					resolve({ is404: false, statusCode: null, error: 'timeout' });
+				}
 			});
 
 			req.setTimeout(timeout);
@@ -246,6 +257,8 @@ class LighthouseRunner {
 				}
 				this.chrome = null;
 			}
+			this.lastReportJson = null;
+			this.categoryMappings = null;
 		}
 	}
 

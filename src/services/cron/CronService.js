@@ -25,6 +25,7 @@ class CronService {
 		this.isRunning = true;
 		console.log('[CronService] Cron service started successfully');
 
+		this.cronJob = cronJob;
 		return cronJob;
 	}
 
@@ -35,7 +36,14 @@ class CronService {
 		}
 
 		console.log('[CronService] Stopping cron service...');
-		this.isRunning = false;
+		try {
+			if (this.cronJob) {
+				this.cronJob.stop();
+				this.cronJob = null;
+			}
+		} finally {
+			this.isRunning = false;
+		}
 	}
 
 	async executeScheduledAudits() {
