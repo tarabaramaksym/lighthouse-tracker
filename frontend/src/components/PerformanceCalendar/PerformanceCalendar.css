@@ -211,3 +211,13 @@
 	font-size: 14px;
 	padding: 20px;
 }
+
+@media (max-width: 768px) {
+	.calendar-day {
+		min-height: 40px;
+	}
+
+	.calendar-day .score-text {
+		font-size: 10px;
+	}
+}

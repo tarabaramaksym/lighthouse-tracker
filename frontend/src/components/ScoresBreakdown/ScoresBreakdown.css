@@ -266,3 +266,13 @@
 .error {
 	color: var(--color-error);
 }
+
+@media (max-width: 768px) {
+	.tabs-header {
+		overflow-x: auto;
+	}
+
+	.tab-content-wrapper {
+		padding: 24px 4px 4px 4px;
+	}
+}

@@ -301,7 +301,7 @@ export function Dashboard() {
 				);
 			default:
 				return (
-					<section style="display: flex;">
+					<section className="dashboard-content-wrapper">
 						<section style="margin-right: 24px; width: 300px;">
 							<UrlList
 								key={`${selectedDomainId}-${urlReloadKey}`}
@@ -397,33 +397,36 @@ export function Dashboard() {
 					{domains.length}/{getPlanLimits(user?.plan).maxDomains} Domains
 				</p>
 				<section style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px">
-					<section style="display: flex; gap: 12px;">
+					<section className="dashboard-domain-actions">
 						<DomainDropdown
 							selectedDomainId={selectedDomainId}
 							onDomainChange={handleDomainChange}
 							reloadKey={domainReloadKey}
 						/>
-						<Button onClick={handleUpdateDomainClick} title={`Update domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-								<path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-							</svg>
-						</Button>
 
-						<Button onClick={handleAddDomainClick} title={`Add domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-							</svg>
-						</Button>
+						<div style="display: flex; gap: 12px;">
+							<Button onClick={handleUpdateDomainClick} title={`Update domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									<path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+								</svg>
+							</Button>
 
-						<Button onClick={handleDeleteDomainClick} title={`Delete domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!selectedDomainId || !!user?.is_read_only}>
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-								<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-								<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-								<path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-							</svg>
-						</Button>
+							<Button onClick={handleAddDomainClick} title={`Add domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!!user?.is_read_only}>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+								</svg>
+							</Button>
+
+							<Button onClick={handleDeleteDomainClick} title={`Delete domain${user?.is_read_only ? ' (Disabled for demo user)' : ''}`} disabled={!selectedDomainId || !!user?.is_read_only}>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									<path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+								</svg>
+							</Button>
+						</div>
 					</section>
 				</section>
 				{/* Main content area */}

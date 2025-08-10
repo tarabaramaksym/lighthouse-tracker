@@ -338,4 +338,9 @@
 		flex-direction: column;
 		gap: 12px;
 	}
+
+	.hero-section {
+		grid-template-columns: 1fr;
+		gap: 24px;
+	}
 }
