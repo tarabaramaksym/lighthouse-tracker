@@ -41,7 +41,7 @@ export function SignUp() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="form-container">
+		<form onSubmit={handleSubmit} className="form">
 			{(error || validationError) && (
 				<Notification type="error" message={error || validationError} />
 			)}

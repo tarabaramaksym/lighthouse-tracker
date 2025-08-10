@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'preact/hooks';
+import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'react-router-dom';
 import Login from '@/components/Login/Login';
 import SignUp from '@/components/SignUp/SignUp';
-import { LighthouseEffect } from '@/components/LighthouseEffect';
 import { Button } from '@/components/Button';
 import { preloadAuthPageAssets } from '@/utils/globalPreloader';
-import dayPng from '@/assets/day.png';
-import nightPng from '@/assets/night.png';
+import lighthouseGif from '@/assets/lighthouse.gif';
 
 import './Auth.css';
 
 export function Auth() {
 	const [searchParams] = useSearchParams();
 	const [isLogin, setIsLogin] = useState(true);
+	const { login } = useAuth();
+
+	const demoEmail = import.meta.env.DEMO_LOGIN;
+	const demoPassword = import.meta.env.DEMO_PASSWORD;
+
+	const handleDemoLogin = async () => {
+		await login({ email: demoEmail, password: demoPassword });
+	};
 
 	useEffect(() => {
 		preloadAuthPageAssets();
@@ -50,7 +57,13 @@ export function Auth() {
 				</div>
 			</div>
 			<div className="lighthouse-gif">
-				<LighthouseEffect borderRadius="16px" dayImageUrl={dayPng} nightImageUrl={nightPng} />
+				{demoEmail && demoPassword && <div className="demo-info">
+					<p>Want to see the demo first?</p>
+					<Button className="btn btn-secondary" onClick={handleDemoLogin} disabled={!demoEmail || !demoPassword}>
+						Login Into Demo
+					</Button>
+				</div>}
+				<img src={lighthouseGif} alt="Lighthouse GIF" />
 			</div>
 		</div>
 	);

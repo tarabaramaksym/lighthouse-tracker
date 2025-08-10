@@ -7,7 +7,7 @@ import './UrlForm.css';
 
 interface UrlFormProps {
 	domainId: number;
-	onUrlCreated: () => void;
+	onUrlCreated: (websiteId: number) => void;
 	onCancel: () => void;
 }
 
@@ -28,8 +28,8 @@ export function UrlForm({ domainId, onUrlCreated, onCancel }: UrlFormProps) {
 			setIsSubmitting(true);
 			setError(null);
 
-			await apiService.urls.createUrl(domainId, path.trim());
-			onUrlCreated();
+			const response = await apiService.urls.createUrl(domainId, path.trim());
+			onUrlCreated(response.url.id);
 		} catch (err: any) {
 			setError(err.message || 'Failed to create URL');
 		} finally {

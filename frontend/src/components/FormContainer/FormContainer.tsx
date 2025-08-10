@@ -7,7 +7,7 @@ interface FormContainerProps {
 
 export function FormContainer({ children }: FormContainerProps) {
 	return (
-		<div className="form-container">
+		<div className="form-container form">
 			{children}
 		</div>
 	);

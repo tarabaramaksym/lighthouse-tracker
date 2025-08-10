@@ -101,7 +101,7 @@ input[type=button]::-moz-focus-inner {
 }
 
 /* Form Container */
-.form-container {
+.form {
 	display: flex;
 	flex-direction: column;
 	gap: 20px;

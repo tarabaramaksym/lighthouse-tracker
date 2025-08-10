@@ -1,11 +1,10 @@
 .auth-container {
-	display: flex;
+	display: grid;
 	align-items: center;
 	justify-content: center;
 	padding: 20px;
 	height: fit-content;
-	grid-template-columns: 444px 1fr;
-	height: 531px;
+	grid-template-columns: 474px 1fr;
 	position: relative;
 	margin-top: 48px;
 }
@@ -15,11 +14,10 @@
 	border-radius: 8px 0 0 8px;
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 	padding: 32px;
-	position: absolute;
 	z-index: 10;
-	width: fit-content;
+	width: 100%;
 	right: 64px;
-	height: 484px;
+	height: 544px;
 }
 
 .auth-header {
@@ -40,9 +38,12 @@
 	object-fit: cover;
 	object-position: 0;
 	width: 100%;
+	height: 100%;
+	position: relative;
 
 	img {
 		height: 100%;
+		border-radius: 0 8px 8px 0;
 	}
 
 	.lighthouse-effect-container {
@@ -90,4 +91,28 @@
 
 .auth-content {
 	min-height: 200px;
+}
+
+.demo-info {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.5);
+	backdrop-filter: blur(2px);
+	text-align: left;
+	padding: 24px 16px;
+	bottom: 24px;
+	left: 24px;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	p {
+		margin: 0;
+		padding: 0;
+	}
+
+	a {
+		color: white;
+		text-decoration: underline;
+	}
 }

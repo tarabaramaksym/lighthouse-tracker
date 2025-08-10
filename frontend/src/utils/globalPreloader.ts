@@ -1,6 +1,6 @@
 import nightPng from '@/assets/calendar_night.png';
 import clouds from '@/assets/clouds.png';
-import authNightPng from '@/assets/night.png';
+import authGif from '@/assets/lighthouse.gif';
 
 export function preloadHomePageAssets() {
 	const criticalImages = [nightPng, clouds];
@@ -15,7 +15,7 @@ export function preloadHomePageAssets() {
 }
 
 export function preloadAuthPageAssets() {
-	const criticalImages = [authNightPng];
+	const criticalImages = [authGif];
 
 	criticalImages.forEach(src => {
 		const link = document.createElement('link');

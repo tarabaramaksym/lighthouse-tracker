@@ -30,7 +30,7 @@ export function Login() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="form-container">
+		<form onSubmit={handleSubmit} className="form">
 			{error && <Notification type="error" message={error} />}
 
 			<div className="form-group">

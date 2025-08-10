@@ -39,6 +39,7 @@ export function Dashboard() {
 	const [editingDomain, setEditingDomain] = useState<any>(null);
 	const [domains, setDomains] = useState<any[]>([]);
 	const [domainReloadKey, setDomainReloadKey] = useState<number>(0);
+	const [urlReloadKey, setUrlReloadKey] = useState<number>(0);
 
 	const domainIdFromUrl = searchParams.get('domain');
 	const websiteIdFromUrl = searchParams.get('website');
@@ -237,9 +238,18 @@ export function Dashboard() {
 		setSearchParams(params);
 	};
 
-	const handleUrlCreated = () => {
+	const handleUrlCreated = (newWebsiteId: number) => {
 		setFormState('none');
-		window.location.reload();
+		setSelectedWebsiteId(newWebsiteId);
+		const params: Record<string, string> = {
+			domain: selectedDomainId!.toString(),
+			website: newWebsiteId.toString()
+		};
+		if (selectedDate) {
+			params.date = selectedDate;
+		}
+		setSearchParams(params);
+		setUrlReloadKey(prev => prev + 1);
 	};
 
 	const handleCancelUrlForm = () => {
@@ -292,7 +302,7 @@ export function Dashboard() {
 					<section style="display: flex;">
 						<section style="margin-right: 24px; width: 300px;">
 							<UrlList
-								key={selectedDomainId}
+								key={`${selectedDomainId}-${urlReloadKey}`}
 								domainId={selectedDomainId}
 								selectedWebsiteId={selectedWebsiteId}
 								onAddUrl={handleAddUrlClick}
