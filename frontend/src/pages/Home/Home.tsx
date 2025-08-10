@@ -10,10 +10,13 @@ import { LighthouseEffect } from '@/components/LighthouseEffect';
 import { Button } from '@/components/Button';
 import { preloadHomePageAssets } from '@/utils/globalPreloader';
 import './Home.css';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export function Home() {
 	const navigate = useNavigate();
 	const [isYearly, setIsYearly] = useState(false);
+
+	useDocumentTitle('Lighthouse Keeper – Track Lighthouse performance over time');
 
 	useEffect(() => {
 		preloadHomePageAssets();

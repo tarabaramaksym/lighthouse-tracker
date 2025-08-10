@@ -14,11 +14,13 @@ import { getPlanLimits } from '@/services/planLimits';
 import { useDataCache } from '@/hooks/useDataCache';
 import { apiService } from '@/services/api';
 import './Dashboard.css';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 type FormState = 'none' | 'domain' | 'url';
 type ViewState = 'main' | 'charts';
 
 export function Dashboard() {
+	useDocumentTitle('Lighthouse Keeper – Dashboard');
 	const { user } = useAuth();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [selectedDomainId, setSelectedDomainId] = useState<number | null>(null);

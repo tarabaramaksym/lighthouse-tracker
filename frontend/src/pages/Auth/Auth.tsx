@@ -6,10 +6,12 @@ import SignUp from '@/components/SignUp/SignUp';
 import { Button } from '@/components/Button';
 import { preloadAuthPageAssets } from '@/utils/globalPreloader';
 import lighthouseGif from '@/assets/lighthouse.gif';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 import './Auth.css';
 
 export function Auth() {
+	useDocumentTitle('Lighthouse Keeper – Auth');
 	const [searchParams] = useSearchParams();
 	const [isLogin, setIsLogin] = useState(true);
 	const { login } = useAuth();
