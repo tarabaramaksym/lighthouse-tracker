@@ -15,19 +15,41 @@ class LighthouseRunner {
 		this.lastReportJson = null;
 	}
 
-	async checkIf404(url) {
+	async checkIf404(url, redirectCount = 0, redirects = []) {
 		return new Promise((resolve) => {
 			const protocol = url.startsWith('https:') ? https : http;
-			const timeout = 10000; // 10 second timeout
+			const timeout = 10000;
 			let settled = false;
 
-			const req = protocol.get(url, { timeout }, (res) => {
-				const is404 = res.statusCode === 404;
-				console.log(`[LighthouseRunner] HTTP ${res.statusCode} for ${url}`);
+			const req = protocol.request(url, { timeout, method: 'GET', headers: { 'User-Agent': 'Mozilla/5.0 LighthouseRunner' } }, (res) => {
+				const status = res.statusCode || 0;
+				const location = res.headers?.location;
+				const isRedirect = [301, 302, 307, 308].includes(status) && !!location;
+				const is404 = status === 404;
+				console.log(`[LighthouseRunner] HTTP ${status} for ${url}${isRedirect ? ` -> ${location}` : ''}`);
+
 				try { res.resume(); } catch (_) { }
+
+				if (isRedirect && redirectCount < 5) {
+					let nextUrl;
+					try {
+						nextUrl = new URL(location, url).toString();
+					} catch (_) {
+						nextUrl = location;
+					}
+					const newRedirects = redirects.concat([{ statusCode: status, location: nextUrl }]);
+					this.checkIf404(nextUrl, redirectCount + 1, newRedirects).then(finalRes => {
+						if (!settled) {
+							settled = true;
+							resolve(finalRes);
+						}
+					});
+					return;
+				}
+
 				if (!settled) {
 					settled = true;
-					resolve({ is404, statusCode: res.statusCode });
+					resolve({ is404, statusCode: status, finalUrl: url, redirects });
 				}
 			});
 
@@ -35,7 +57,7 @@ class LighthouseRunner {
 				console.log(`[LighthouseRunner] HTTP error for ${url}:`, error.message);
 				if (!settled) {
 					settled = true;
-					resolve({ is404: false, statusCode: null, error: error.message });
+					resolve({ is404: false, statusCode: null, error: error.message, finalUrl: url, redirects });
 				}
 			});
 
@@ -44,11 +66,12 @@ class LighthouseRunner {
 				try { req.destroy(); } catch (_) { }
 				if (!settled) {
 					settled = true;
-					resolve({ is404: false, statusCode: null, error: 'timeout' });
+					resolve({ is404: false, statusCode: null, error: 'timeout', finalUrl: url, redirects });
 				}
 			});
 
 			req.setTimeout(timeout);
+			req.end();
 		});
 	}
 
@@ -83,6 +106,14 @@ class LighthouseRunner {
 			if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
 				fullUrl = `https://${fullUrl}`;
 			}
+
+			try {
+				const parsed = new URL(fullUrl);
+				if (!parsed.hostname.startsWith('www.')) {
+					parsed.hostname = `www.${parsed.hostname}`;
+					fullUrl = parsed.toString();
+				}
+			} catch (_) { }
 
 			console.log(`[LighthouseRunner] Full URL: ${fullUrl}`);
 
