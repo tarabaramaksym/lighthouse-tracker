@@ -48,6 +48,7 @@
 		position: absolute;
 		translate: -50%;
 		z-index: -1;
+		max-width: 100%;
 	}
 }
 

@@ -23,7 +23,6 @@ export function LighthouseEffect({ dayImageUrl, nightImageUrl, borderRadius = '0
 	const autoDirectionRef = useRef<{ x: number; y: number }>({ x: 1, y: 1 });
 
 	useEffect(() => {
-		console.log('test');
 		const textCanvas = textCanvasRef.current;
 		let textCtx: CanvasRenderingContext2D | null = null;
 
