@@ -29,16 +29,23 @@ interface PerformanceCalendarProps {
 	websiteId: number | null;
 	selectedDate: string | null;
 	onDateSelect: (date: string) => void;
+	onMonthChange?: (year: number, month: number) => void;
 	data: any;
 	isLoading: boolean;
 	error: string | null;
 	isMobile: boolean;
 }
 
-export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateSelect, data, isLoading, error }: PerformanceCalendarProps) {
+export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateSelect, onMonthChange, data, isLoading, error }: PerformanceCalendarProps) {
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const calendarData = data;
 
+	const handleMonthChange = (newMonth: Date) => {
+		setCurrentMonth(newMonth);
+		if (onMonthChange) {
+			onMonthChange(newMonth.getFullYear(), newMonth.getMonth() + 1);
+		}
+	};
 
 
 	const getPerformanceColor = (score: number): string => {
@@ -57,7 +64,7 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 			<div className="calendar-header">
 				<Button
 					className="calendar-nav-btn"
-					onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+					onClick={() => handleMonthChange(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
 				>
 					←
 				</Button>
@@ -66,7 +73,7 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 				</h3>
 				<Button
 					className="calendar-nav-btn"
-					onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+					onClick={() => handleMonthChange(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
 				>
 					→
 				</Button>
@@ -104,7 +111,7 @@ export function PerformanceCalendar({ domainId, websiteId, selectedDate, onDateS
 					}}
 				>
 					<span className="day-number">{currentDate.getDate()}</span>
-					{isCurrentMonth && dayScore && (
+					{dayScore && (
 						<div className={`performance-indicator ${getPerformanceColor(dayScore.overall)}`}>
 							<span className="score-text">{dayScore.overall}</span>
 						</div>

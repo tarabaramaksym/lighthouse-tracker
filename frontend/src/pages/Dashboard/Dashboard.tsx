@@ -9,7 +9,6 @@ import { UrlForm } from '@/components/UrlForm';
 import { PerformanceCalendar } from '@/components/PerformanceCalendar';
 import { ScoresBreakdown } from '@/components/ScoresBreakdown';
 import { ScoresChart, ChartControls } from '@/components/ScoresChart';
-// import { FormContainer } from '@/components/FormContainer';
 import { getPlanLimits } from '@/services/planLimits';
 import { useDataCache } from '@/hooks/useDataCache';
 import { apiService } from '@/services/api';
@@ -42,6 +41,7 @@ export function Dashboard() {
 	const [domains, setDomains] = useState<any[]>([]);
 	const [domainReloadKey, setDomainReloadKey] = useState<number>(0);
 	const [urlReloadKey, setUrlReloadKey] = useState<number>(0);
+	const [currentCalendarMonth, setCurrentCalendarMonth] = useState({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 });
 
 	const domainIdFromUrl = searchParams.get('domain');
 	const websiteIdFromUrl = searchParams.get('website');
@@ -81,7 +81,7 @@ export function Dashboard() {
 		} else {
 			setCalendarData(null);
 		}
-	}, [selectedDomainId, selectedWebsiteId, isMobile]);
+	}, [selectedDomainId, selectedWebsiteId, isMobile, currentCalendarMonth]);
 
 	useEffect(() => {
 		fetchDomains();
@@ -90,8 +90,8 @@ export function Dashboard() {
 	const fetchDailyData = async () => {
 		if (!selectedDomainId || !selectedWebsiteId || !selectedDate) return;
 
-		// Check cache first
 		const cachedData = cache.get(selectedDomainId, selectedWebsiteId, selectedDate, isMobile);
+
 		if (cachedData) {
 			setDailyData(cachedData);
 			return;
@@ -103,7 +103,6 @@ export function Dashboard() {
 			const response = await apiService.issues.getDailyIssues(selectedDomainId, selectedWebsiteId, selectedDate, isMobile);
 			setDailyData(response.data);
 
-			// Cache the response
 			cache.set(selectedDomainId, selectedWebsiteId, selectedDate, response.data, isMobile);
 		} catch (err: any) {
 			setDailyError(err.message || 'Failed to fetch daily data');
@@ -115,31 +114,114 @@ export function Dashboard() {
 	const fetchCalendarData = async () => {
 		if (!selectedDomainId || !selectedWebsiteId) return;
 
-		const currentDate = new Date();
-		const year = currentDate.getFullYear();
-		const month = currentDate.getMonth() + 1;
-		const cacheKey = `${selectedDomainId}-${selectedWebsiteId}-calendar-${year}-${month}-${isMobile}`;
+		const { year, month } = currentCalendarMonth;
 
-		// Check cache first
-		const cachedData = cache.get(selectedDomainId, selectedWebsiteId, cacheKey);
-		if (cachedData) {
-			setCalendarData(cachedData);
-			return;
-		}
+		const monthsToFetch = [
+			{ year, month },
+			{ year: month === 1 ? year - 1 : year, month: month === 1 ? 12 : month - 1 },
+			{ year: month === 12 ? year + 1 : year, month: month === 12 ? 1 : month + 1 }
+		];
 
 		try {
 			setIsLoadingCalendar(true);
 			setCalendarError(null);
-			const response = await apiService.issues.getCalendarData(selectedDomainId, selectedWebsiteId, year, month, isMobile);
-			setCalendarData(response.data);
 
-			// Cache the response
-			cache.set(selectedDomainId, selectedWebsiteId, cacheKey, response.data);
+			const currentMonthData = monthsToFetch[0];
+			const cacheKey = `${selectedDomainId}-${selectedWebsiteId}-calendar-${currentMonthData.year}-${currentMonthData.month}-${isMobile}`;
+
+			const cachedData = cache.get(selectedDomainId, selectedWebsiteId, cacheKey);
+			if (cachedData) {
+				// Merge with any existing adjacent month data
+				setCalendarData((prevData: any) => {
+					if (!prevData) return cachedData;
+
+					const allData: Record<string, any> = {};
+
+					// Merge existing data
+					if (prevData.daily_scores) {
+						Object.assign(allData, prevData.daily_scores);
+					}
+
+					// Merge cached data
+					if (cachedData.daily_scores) {
+						Object.assign(allData, cachedData.daily_scores);
+					}
+
+					return {
+						...cachedData,
+						daily_scores: allData
+					};
+				});
+			} else {
+				const response = await apiService.issues.getCalendarData(selectedDomainId, selectedWebsiteId, currentMonthData.year, currentMonthData.month, isMobile);
+
+				// Merge with any existing adjacent month data
+				setCalendarData((prevData: any) => {
+					const allData: Record<string, any> = {};
+
+					// Merge existing data
+					if (prevData && prevData.daily_scores) {
+						Object.assign(allData, prevData.daily_scores);
+					}
+
+					// Merge new data
+					if (response.data && response.data.daily_scores) {
+						Object.assign(allData, response.data.daily_scores);
+					}
+
+					return {
+						...response.data,
+						daily_scores: allData
+					};
+				});
+
+				cache.set(selectedDomainId, selectedWebsiteId, cacheKey, response.data);
+			}
+
+			const adjacentMonths = monthsToFetch.slice(1);
+
+			for (const { year: fetchYear, month: fetchMonth } of adjacentMonths) {
+				const cacheKey = `${selectedDomainId}-${selectedWebsiteId}-calendar-${fetchYear}-${fetchMonth}-${isMobile}`;
+
+				const cachedData = cache.get(selectedDomainId, selectedWebsiteId, cacheKey);
+				if (cachedData) continue;
+
+				apiService.issues.getCalendarData(selectedDomainId, selectedWebsiteId, fetchYear, fetchMonth, isMobile)
+					.then(response => {
+						cache.set(selectedDomainId, selectedWebsiteId, cacheKey, response.data);
+
+						setCalendarData((prevData: any) => {
+							if (!prevData) return prevData;
+
+							const allData: Record<string, any> = {};
+
+							if (prevData.daily_scores) {
+								Object.assign(allData, prevData.daily_scores);
+							}
+
+							if (response.data && response.data.daily_scores) {
+								Object.assign(allData, response.data.daily_scores);
+							}
+
+							return {
+								...prevData,
+								daily_scores: allData
+							};
+						});
+					})
+					.catch(err => {
+						console.error(`Failed to fetch data for ${fetchYear}-${fetchMonth}:`, err);
+					});
+			}
 		} catch (err: any) {
 			setCalendarError(err.message || 'Failed to fetch calendar data');
 		} finally {
 			setIsLoadingCalendar(false);
 		}
+	};
+
+	const handleCalendarMonthChange = (year: number, month: number) => {
+		setCurrentCalendarMonth({ year, month });
 	};
 
 	const handleDomainChange = (domainId: number) => {
@@ -276,10 +358,6 @@ export function Dashboard() {
 		setViewState(view);
 	};
 
-	// const handleMobileToggle = () => {
-	//     setIsMobile(!isMobile);
-	// };
-
 	const renderMainContent = () => {
 		switch (formState) {
 			case 'domain':
@@ -344,6 +422,7 @@ export function Dashboard() {
 												isLoading={isLoadingCalendar}
 												error={calendarError}
 												isMobile={isMobile}
+												onMonthChange={handleCalendarMonthChange}
 											/>
 										</div>
 									</section>
