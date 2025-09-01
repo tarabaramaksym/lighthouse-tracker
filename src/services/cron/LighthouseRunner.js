@@ -107,14 +107,6 @@ class LighthouseRunner {
 				fullUrl = `https://${fullUrl}`;
 			}
 
-			try {
-				const parsed = new URL(fullUrl);
-				if (!parsed.hostname.startsWith('www.')) {
-					parsed.hostname = `www.${parsed.hostname}`;
-					fullUrl = parsed.toString();
-				}
-			} catch (_) { }
-
 			console.log(`[LighthouseRunner] Full URL: ${fullUrl}`);
 
 			const httpCheck = await this.checkIf404(fullUrl);
