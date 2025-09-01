@@ -77,6 +77,13 @@ export function Dashboard() {
 
 	useEffect(() => {
 		if (selectedDomainId && selectedWebsiteId) {
+			const shouldClearData = !calendarData ||
+				calendarData.domain?.id !== selectedDomainId ||
+				calendarData.website?.id !== selectedWebsiteId;
+
+			if (shouldClearData) {
+				setCalendarData(null);
+			}
 			fetchCalendarData();
 		} else {
 			setCalendarData(null);
